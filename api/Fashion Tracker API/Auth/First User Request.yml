@@ -1,0 +1,27 @@
+info:
+  name: First User Request
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:8080/api/auth/register
+  headers:
+    - name: ""
+      value: Content-Type
+      description: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "username": "testuser",
+        "email": "test@example.com",
+        "password": "password123"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
