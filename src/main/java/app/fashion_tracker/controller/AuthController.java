@@ -42,4 +42,9 @@ public class AuthController {
 
         return new LoginResponse(token);
     }
+
+    @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout() {
+    }
 }
