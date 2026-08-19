@@ -8,8 +8,12 @@ import app.fashion_tracker.repository.UserRepository;
 
 import app.fashion_tracker.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 @RestController
 @RequestMapping("/api/users")
@@ -49,5 +53,14 @@ public class UserController {
         User user = userService.updateProfile(userId, request);
 
         return UserResponse.from(user);
+    }
+
+    @DeleteMapping("/me")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAccount(Authentication authentication) {
+
+        Long userId = Long.valueOf(authentication.getName());
+
+        userService.deleteAccount(userId);
     }
 }

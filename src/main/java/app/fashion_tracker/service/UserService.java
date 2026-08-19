@@ -51,4 +51,14 @@ public class UserService {
 
         return userRepository.save(user);
     }
+
+    public void deleteAccount(Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new UserNotFoundException("User not found")
+                );
+
+        userRepository.delete(user);
+    }
 }
