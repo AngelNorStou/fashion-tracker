@@ -1,5 +1,7 @@
 package app.fashion_tracker.controller;
 
+import app.fashion_tracker.dto.LoginRequest;
+import app.fashion_tracker.dto.LoginResponse;
 import app.fashion_tracker.dto.RegisterRequest;
 import app.fashion_tracker.dto.UserResponse;
 import app.fashion_tracker.model.User;
@@ -30,5 +32,14 @@ public class AuthController {
                 user.getUsername(),
                 user.getEmail()
         );
+    }
+
+    @PostMapping("/login")
+    public LoginResponse login(
+            @Valid @RequestBody LoginRequest request
+    ) {
+        String token = authService.login(request);
+
+        return new LoginResponse(token);
     }
 }

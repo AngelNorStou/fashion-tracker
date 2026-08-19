@@ -1,5 +1,5 @@
 info:
-  name: First User Request
+  name: Register
   type: http
   seq: 1
 
@@ -14,9 +14,9 @@ http:
     type: json
     data: |-
       {
-        "username": "testuser",
-        "email": "test@example.com",
-        "password": "password123"
+        "username": "newuser3",
+        "email": "user3@example.com",
+        "password": "123"
       }
   auth: inherit
 
