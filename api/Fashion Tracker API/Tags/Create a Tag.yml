@@ -1,0 +1,23 @@
+info:
+  name: Create a Tag
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:8080/api/tags
+  body:
+    type: json
+    data: |-
+      {
+        "name": "casual"
+      }
+  auth:
+    type: bearer
+    token: eyJraWQiOiJzN01JNGkwaWJ2Uk5neVc3a3o4S0ZENEt5RzZDQWxBcF9udk1MUXI3VWx3IiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiI0IiwiZXhwIjoxNzg4MTQxODA4LCJpYXQiOjE3ODgxNDA5MDgsImVtYWlsIjoidXNlcjM0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJ0ZXN0dXNlcjM0In0.DbhgxoFcy1FyrblrIWF1zqFK1ca4jJHpGXqqav2HgwI
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

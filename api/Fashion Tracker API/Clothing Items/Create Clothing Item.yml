@@ -1,0 +1,28 @@
+info:
+  name: Create Clothing Item
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:8080/api/clothing
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Blue T-Shirt",
+        "brand": "Nike",
+        "color": "Blue",
+        "size": "M",
+        "categoryId": 17,
+        "tagIds": [1]
+      }
+  auth:
+    type: bearer
+    token: eyJraWQiOiJzN01JNGkwaWJ2Uk5neVc3a3o4S0ZENEt5RzZDQWxBcF9udk1MUXI3VWx3IiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiI0IiwiZXhwIjoxNzg4MTQxODA4LCJpYXQiOjE3ODgxNDA5MDgsImVtYWlsIjoidXNlcjM0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJ0ZXN0dXNlcjM0In0.DbhgxoFcy1FyrblrIWF1zqFK1ca4jJHpGXqqav2HgwI
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

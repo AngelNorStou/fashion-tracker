@@ -1,0 +1,7 @@
+info:
+  name: Clothing Items
+  type: folder
+  seq: 4
+
+request:
+  auth: inherit

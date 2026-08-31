@@ -1,0 +1,15 @@
+info:
+  name: Update Tags
+  type: http
+  seq: 3
+
+http:
+  method: PATCH
+  url: http://localhost:8080/api/clothing/1
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
