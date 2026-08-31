@@ -5,8 +5,18 @@ info:
 
 http:
   method: POST
-  url: POST http://localhost:8080/api/auth/login
-  auth: inherit
+  url: http://localhost:8080/api/auth/login
+  body:
+    type: json
+    data: |-
+      {
+        "email": "user34@example.com",
+        "password": "Password123!"
+      }
+  auth:
+    type: basic
+    username: testuser34
+    password: Password123!
 
 settings:
   encodeUrl: true

@@ -6,6 +6,9 @@ info:
 http:
   method: PATCH
   url: http://localhost:8080/api/users/me
+  body:
+    type: json
+    data: ""
   auth: inherit
 
 settings:
