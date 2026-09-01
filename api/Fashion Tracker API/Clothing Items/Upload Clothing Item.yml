@@ -1,0 +1,37 @@
+info:
+  name: Upload Clothing Item
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:8080/api/clothing
+  body:
+    type: multipart-form
+    data:
+      - name: file
+        type: file
+        value:
+          - C:\Users\angel\Downloads\white_hoodie.png
+        contentType: image/png
+      - name: data
+        type: text
+        value: |-
+          {
+            "name": "White Hoodie",
+            "brand": "Gildan",
+            "color": "White",
+            "size": "L",
+            "categoryId": 17,
+            "tagIds": [1]
+          }
+        contentType: application/json
+  auth:
+    type: bearer
+    token: eyJraWQiOiJzN01JNGkwaWJ2Uk5neVc3a3o4S0ZENEt5RzZDQWxBcF9udk1MUXI3VWx3IiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiI0IiwiZXhwIjoxNzg4MjIyNjYxLCJpYXQiOjE3ODgyMjE3NjEsImVtYWlsIjoidXNlcjM0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJ0ZXN0dXNlcjM0In0._JKF60-9KeGIwOokU8o8lDmTlh8jqbZA2GDThE8CZbk
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

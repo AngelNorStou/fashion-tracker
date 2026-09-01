@@ -1,0 +1,37 @@
+info:
+  name: Update Clothing Item
+  type: http
+  seq: 1
+
+http:
+  method: PATCH
+  url: http://localhost:8080/api/clothing/2
+  body:
+    type: multipart-form
+    data:
+      - name: data
+        type: text
+        value: |-
+          {
+            "name": "Nike Shorts",
+            "brand": "Nike",
+            "color": "Black",
+            "size": "S",
+            "categoryId": 24,
+            "tagIds": [1]
+          }
+        contentType: application/json
+      - name: ""
+        type: file
+        value:
+          - C:\Users\angel\Downloads\nike_black_shorts.jpg
+        contentType: image/jpeg
+  auth:
+    type: bearer
+    token: eyJraWQiOiJzN01JNGkwaWJ2Uk5neVc3a3o4S0ZENEt5RzZDQWxBcF9udk1MUXI3VWx3IiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiI0IiwiZXhwIjoxNzg4MjI0MTk2LCJpYXQiOjE3ODgyMjMyOTYsImVtYWlsIjoidXNlcjM0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJ0ZXN0dXNlcjM0In0.gd272BTRMDPUctVL0cKYjaSkMtynYB8h19g4zHIPRho
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

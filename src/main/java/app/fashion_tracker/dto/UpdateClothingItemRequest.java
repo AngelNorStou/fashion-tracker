@@ -20,7 +20,9 @@ public record UpdateClothingItemRequest(
 
         Long categoryId,
 
-        Set<Long> tagIds
+        Set<Long> tagIds,
+
+        String imagePath
 
 ) {
 }

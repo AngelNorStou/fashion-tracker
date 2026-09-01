@@ -7,16 +7,14 @@ import app.fashion_tracker.model.Category;
 import app.fashion_tracker.model.ClothingItem;
 import app.fashion_tracker.model.Tag;
 import app.fashion_tracker.model.User;
-import app.fashion_tracker.repository.CategoryRepository;
-import app.fashion_tracker.repository.ClothingItemRepository;
-import app.fashion_tracker.repository.TagRepository;
-import app.fashion_tracker.repository.UserRepository;
+import app.fashion_tracker.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.io.IOException;
+
+import java.util.*;
 import java.util.List;
 import java.util.Set;
 
@@ -27,24 +25,28 @@ public class ClothingItemService {
     private final CategoryRepository categoryRepository;
     private final TagRepository tagRepository;
     private final UserRepository userRepository;
+    private final SupabaseStorageService supabaseStorageService;
 
     public ClothingItemService(
             ClothingItemRepository clothingItemRepository,
             CategoryRepository categoryRepository,
             TagRepository tagRepository,
-            UserRepository userRepository
+            UserRepository userRepository,
+            SupabaseStorageService supabaseStorageService
     ) {
         this.clothingItemRepository = clothingItemRepository;
         this.categoryRepository = categoryRepository;
         this.tagRepository = tagRepository;
         this.userRepository = userRepository;
+        this.supabaseStorageService = supabaseStorageService;
     }
 
     @Transactional
     public ClothingItemResponse create(
             Long userId,
-            CreateClothingItemRequest request
-    ) {
+            CreateClothingItemRequest request,
+            MultipartFile file
+    ) throws IOException {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->
@@ -68,15 +70,52 @@ public class ClothingItemService {
         item.setSize(request.size());
         item.setTags(tags);
 
+        if (file != null && !file.isEmpty()) {
+
+            String extension = "";
+
+            if (file.getOriginalFilename() != null &&
+                    file.getOriginalFilename().contains(".")) {
+
+                extension = file.getOriginalFilename()
+                        .substring(file.getOriginalFilename().lastIndexOf("."));
+            }
+
+            String filePath = userId + "/" + UUID.randomUUID() + extension;
+
+            String imagePath =
+                    supabaseStorageService.uploadImage(file, filePath);
+
+            item.setImagePath(imagePath);
+        }
+
         ClothingItem saved = clothingItemRepository.save(item);
 
         return toResponse(saved);
     }
 
     @Transactional(readOnly = true)
-    public List<ClothingItemResponse> getAll(Long userId) {
+    public List<ClothingItemResponse> getAll(
+            Long userId,
+            String search,
+            String color,
+            String brand,
+            String size,
+            Long categoryId,
+            Long tagId
+    ) {
 
-        return clothingItemRepository.findByUserId(userId)
+        return clothingItemRepository.findAll(
+                        ClothingItemSpecification.filter(
+                                userId,
+                                search,
+                                color,
+                                brand,
+                                size,
+                                categoryId,
+                                tagId
+                        )
+                )
                 .stream()
                 .map(this::toResponse)
                 .toList();
@@ -97,8 +136,10 @@ public class ClothingItemService {
     public ClothingItemResponse update(
             Long userId,
             Long itemId,
-            UpdateClothingItemRequest request
-    ) {
+            UpdateClothingItemRequest request,
+            MultipartFile file
+    )throws IOException
+    {
 
         ClothingItem item = getUserItem(userId, itemId);
 
@@ -118,6 +159,10 @@ public class ClothingItemService {
             item.setSize(request.size());
         }
 
+        if (request.imagePath() != null) {
+            item.setImagePath(request.imagePath());
+        }
+
         if (request.categoryId() != null) {
 
             Category category = categoryRepository
@@ -131,6 +176,27 @@ public class ClothingItemService {
 
         if (request.tagIds() != null) {
             item.setTags(getUserTags(userId, request.tagIds()));
+        }
+
+        // Upload a new image if one was provided
+        if (file != null && !file.isEmpty()) {
+
+            String extension = "";
+
+            if (file.getOriginalFilename() != null &&
+                    file.getOriginalFilename().contains(".")) {
+
+                extension = file.getOriginalFilename()
+                        .substring(file.getOriginalFilename().lastIndexOf("."));
+            }
+
+            String filePath =
+                    userId + "/" + UUID.randomUUID() + extension;
+
+            String imagePath =
+                    supabaseStorageService.uploadImage(file, filePath);
+
+            item.setImagePath(imagePath);
         }
 
         return toResponse(item);

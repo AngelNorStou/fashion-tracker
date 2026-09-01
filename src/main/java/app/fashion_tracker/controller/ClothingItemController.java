@@ -10,6 +10,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/clothing")
@@ -23,26 +33,61 @@ public class ClothingItemController {
         this.clothingItemService = clothingItemService;
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public ClothingItemResponse create(
             Authentication authentication,
-            @Valid @RequestBody CreateClothingItemRequest request
-    ) {
+
+            @RequestPart("data")
+            @Valid CreateClothingItemRequest request,
+
+            @RequestPart(value = "file", required = false)
+            MultipartFile file
+    ) throws IOException {
 
         Long userId = Long.valueOf(authentication.getName());
 
-        return clothingItemService.create(userId, request);
+        return clothingItemService.create(
+                userId,
+                request,
+                file
+        );
     }
 
     @GetMapping
     public List<ClothingItemResponse> getAll(
-            Authentication authentication
+            Authentication authentication,
+
+            @RequestParam(required = false)
+            String search,
+
+            @RequestParam(required = false)
+            String color,
+
+            @RequestParam(required = false)
+            String brand,
+
+            @RequestParam(required = false)
+            String size,
+
+            @RequestParam(required = false)
+            Long categoryId,
+
+            @RequestParam(required = false)
+            Long tagId
     ) {
 
         Long userId = Long.valueOf(authentication.getName());
 
-        return clothingItemService.getAll(userId);
+        return clothingItemService.getAll(
+                userId,
+                search,
+                color,
+                brand,
+                size,
+                categoryId,
+                tagId
+        );
     }
 
     @GetMapping("/{id}")
@@ -56,19 +101,30 @@ public class ClothingItemController {
         return clothingItemService.getById(userId, id);
     }
 
-    @PatchMapping("/{id}")
+
+
+    @PatchMapping(
+            value = "/{id}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     public ClothingItemResponse update(
             Authentication authentication,
             @PathVariable Long id,
-            @Valid @RequestBody UpdateClothingItemRequest request
-    ) {
+
+            @RequestPart("data")
+            @Valid UpdateClothingItemRequest request,
+
+            @RequestPart(value = "file", required = false)
+            MultipartFile file
+    ) throws IOException {
 
         Long userId = Long.valueOf(authentication.getName());
 
         return clothingItemService.update(
                 userId,
                 id,
-                request
+                request,
+                file
         );
     }
 
