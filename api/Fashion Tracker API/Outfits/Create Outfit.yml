@@ -1,15 +1,18 @@
 info:
-  name: Search Clothing
+  name: Create Outfit
   type: http
   seq: 1
 
 http:
-  method: GET
-  url: http://localhost:8080/api/clothing?search=
-  params:
-    - name: search
-      value: ""
-      type: query
+  method: POST
+  url: http://localhost:8080/api/outfits
+  body:
+    type: json
+    data: |-
+      {
+        "name": "All Three",
+        "clothingItemIds": [1, 2,3]
+      }
   auth:
     type: bearer
     token: eyJraWQiOiJzN01JNGkwaWJ2Uk5neVc3a3o4S0ZENEt5RzZDQWxBcF9udk1MUXI3VWx3IiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiI0IiwiZXhwIjoxNzg4MjM4MTMyLCJpYXQiOjE3ODgyMzcyMzIsImVtYWlsIjoidXNlcjM0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJ0ZXN0dXNlcjM0In0.JwidlnQ_9l0tAjDvlNCdejTnv7tmu84tDO13fIR9osg
