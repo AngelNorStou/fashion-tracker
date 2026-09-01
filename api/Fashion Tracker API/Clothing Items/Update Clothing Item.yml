@@ -11,17 +11,14 @@ http:
     data:
       - name: data
         type: text
-        value: |-
-          {
-            "name": "Nike Shorts",
-            "brand": "Nike",
-            "color": "Black",
-            "size": "S",
-            "categoryId": 24,
-            "tagIds": [1]
-          }
+        value: |2-
+             { "name": "Nike Shorts",
+              "brand": "Nike",
+              "color": "Black",
+              "size": "S",
+              "categoryId": 24 }
         contentType: application/json
-      - name: ""
+      - name: file
         type: file
         value:
           - C:\Users\angel\Downloads\nike_black_shorts.jpg

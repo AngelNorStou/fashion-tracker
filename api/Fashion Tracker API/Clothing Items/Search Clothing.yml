@@ -5,14 +5,14 @@ info:
 
 http:
   method: GET
-  url: http://localhost:8080/api/clothing?search=hoodie
+  url: http://localhost:8080/api/clothing?search=short
   params:
     - name: search
-      value: hoodie
+      value: short
       type: query
   auth:
     type: bearer
-    token: eyJraWQiOiJzN01JNGkwaWJ2Uk5neVc3a3o4S0ZENEt5RzZDQWxBcF9udk1MUXI3VWx3IiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiI0IiwiZXhwIjoxNzg4MjIyNjYxLCJpYXQiOjE3ODgyMjE3NjEsImVtYWlsIjoidXNlcjM0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJ0ZXN0dXNlcjM0In0._JKF60-9KeGIwOokU8o8lDmTlh8jqbZA2GDThE8CZbk
+    token: eyJraWQiOiJzN01JNGkwaWJ2Uk5neVc3a3o4S0ZENEt5RzZDQWxBcF9udk1MUXI3VWx3IiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiI0IiwiZXhwIjoxNzg4MjI0MTk2LCJpYXQiOjE3ODgyMjMyOTYsImVtYWlsIjoidXNlcjM0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJ0ZXN0dXNlcjM0In0.gd272BTRMDPUctVL0cKYjaSkMtynYB8h19g4zHIPRho
 
 settings:
   encodeUrl: true
