@@ -1,4 +1,61 @@
+"use client";
+
+import Link from "next/link";
+import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/api";
+
 export default function LoginPage() {
+  const router = useRouter();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    setError("");
+    setLoading(true);
+
+    try {
+      const data = await apiFetch("/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      console.log("Login response:", data);
+
+      /*
+       * We will store the JWT returned by Spring Boot.
+       *
+       * This assumes the response contains:
+       *
+       * {
+       *   "token": "..."
+       * }
+       *
+       */
+      localStorage.setItem("accessToken", data.token);
+      window.dispatchEvent(new Event("auth-changed"));
+
+      router.push("/wardrobe");
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to log in."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <main className="min-h-[calc(100vh-4rem)] bg-[#F7F3EC] px-6 py-16">
       <div className="mx-auto max-w-md">
@@ -15,7 +72,16 @@ export default function LoginPage() {
 
         <div className="rounded-xl border border-[#E3DACB] bg-[#FFFDF9] p-6">
 
-          <form className="space-y-5">
+          {error && (
+            <div className="mb-5 rounded-lg border border-[#D9B8A8] bg-[#F3E2D5] px-4 py-3 text-sm text-[#9A4A25]">
+              {error}
+            </div>
+          )}
+
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-5"
+          >
 
             <div>
               <label
@@ -28,6 +94,9 @@ export default function LoginPage() {
               <input
                 id="email"
                 type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 className="w-full rounded-lg border border-[#E3DACB] bg-[#FFFDF9] px-3 py-2.5 text-sm text-[#2B2620] outline-none placeholder:text-[#A69C8C] focus:border-[#C1592F]"
               />
@@ -44,6 +113,9 @@ export default function LoginPage() {
               <input
                 id="password"
                 type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 className="w-full rounded-lg border border-[#E3DACB] bg-[#FFFDF9] px-3 py-2.5 text-sm text-[#2B2620] outline-none placeholder:text-[#A69C8C] focus:border-[#C1592F]"
               />
@@ -51,21 +123,23 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className="w-full rounded-lg bg-[#C1592F] py-3 text-sm font-medium text-[#FFF7EE] transition hover:bg-[#9A4A25]"
+              disabled={loading}
+              className="w-full rounded-lg bg-[#C1592F] py-3 text-sm font-medium text-[#FFF7EE] transition hover:bg-[#9A4A25] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Log in
+              {loading ? "Logging in..." : "Log in"}
             </button>
 
           </form>
 
           <p className="mt-6 text-center text-sm text-[#8A8172]">
             Don't have an account?{" "}
-            <a
+
+            <Link
               href="/register"
               className="font-medium text-[#C1592F] hover:underline"
             >
               Register
-            </a>
+            </Link>
           </p>
 
         </div>

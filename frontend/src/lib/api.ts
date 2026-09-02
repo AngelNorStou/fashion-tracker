@@ -1,0 +1,46 @@
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+
+export async function apiFetch(
+  endpoint: string,
+  options: RequestInit = {}
+) {
+  const token =
+    typeof window !== "undefined"
+      ? localStorage.getItem("accessToken")
+      : null;
+
+  const headers = new Headers(options.headers);
+
+  if (!headers.has("Content-Type") && options.body) {
+    headers.set("Content-Type", "application/json");
+  }
+
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
+
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    ...options,
+    headers,
+  });
+
+  if (!response.ok) {
+    let message = "Something went wrong.";
+
+    try {
+      const data = await response.json();
+      message = data.message ?? data.error ?? message;
+    } catch {
+      // Response wasn't JSON.
+    }
+
+    throw new Error(message);
+  }
+
+  if (response.status === 204) {
+    return null;
+  }
+
+  return response.json();
+}
