@@ -23,11 +23,11 @@ export default function ClothingCard({ item }: ClothingCardProps) {
       <div className="relative aspect-[4/5] overflow-hidden bg-[#EEE8DE]">
 
         {item.imagePath ? (
-          <img
-            src={`http://localhost:8080/api/clothing/images/${item.imagePath}`}
-            alt={item.name}
-            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-          />
+        <img
+          src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/clothing-images/${item.imagePath}`}
+          alt={item.name}
+          className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+        />
         ) : (
           <div className="flex h-full items-center justify-center">
             <span className="text-sm text-[#A69C8C]">
