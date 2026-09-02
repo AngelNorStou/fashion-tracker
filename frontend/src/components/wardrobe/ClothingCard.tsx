@@ -1,0 +1,114 @@
+"use client";
+
+type ClothingItem = {
+  id: number;
+  name: string;
+  brand: string;
+  color: string;
+  size: string;
+  imagePath: string | null;
+  categoryName: string;
+  tagIds: number[];
+};
+
+type ClothingCardProps = {
+  item: ClothingItem;
+};
+
+export default function ClothingCard({ item }: ClothingCardProps) {
+  return (
+    <article className="group overflow-hidden rounded-2xl border border-[#E3DACB] bg-[#FFFDF9] shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+
+      {/* Image */}
+      <div className="relative aspect-[4/5] overflow-hidden bg-[#EEE8DE]">
+
+        {item.imagePath ? (
+          <img
+            src={`http://localhost:8080/api/clothing/images/${item.imagePath}`}
+            alt={item.name}
+            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center">
+            <span className="text-sm text-[#A69C8C]">
+              No image
+            </span>
+          </div>
+        )}
+
+        {/* Category badge */}
+        <span className="absolute left-4 top-4 rounded-full bg-[#FFFDF9]/90 px-3 py-1 text-xs font-medium text-[#5C5344] backdrop-blur-sm">
+          {item.categoryName}
+        </span>
+
+      </div>
+
+      {/* Information */}
+      <div className="p-5">
+
+        <div className="flex items-start justify-between gap-4">
+
+          <div>
+            <h3 className="font-medium text-[#2B2620]">
+              {item.name}
+            </h3>
+
+            <p className="mt-1 text-sm text-[#8A8172]">
+              {item.brand}
+            </p>
+          </div>
+
+          <span className="text-sm text-[#8A8172]">
+            {item.size}
+          </span>
+
+        </div>
+
+        <div className="mt-4 flex items-center gap-2 text-sm text-[#5C5344]">
+          <span
+            className="h-3 w-3 rounded-full border border-[#C9BFAF]"
+            style={{
+              backgroundColor: item.color.toLowerCase(),
+            }}
+          />
+
+          {item.color}
+        </div>
+
+        {/* Tags */}
+        {item.tagIds.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {item.tagIds.map((tagId) => (
+              <span
+                key={tagId}
+                className="rounded-full bg-[#F1EADF] px-2.5 py-1 text-xs text-[#6D6253]"
+              >
+                Tag {tagId}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Actions */}
+        <div className="mt-5 flex gap-2 border-t border-[#EEE7DC] pt-4">
+
+          <button
+            type="button"
+            className="flex-1 rounded-lg border border-[#D8CFC1] px-3 py-2 text-sm font-medium text-[#5C5344] transition hover:bg-[#F3EDE4]"
+          >
+            Edit
+          </button>
+
+          <button
+            type="button"
+            className="flex-1 rounded-lg border border-[#D9B8A8] px-3 py-2 text-sm font-medium text-[#9A4A25] transition hover:bg-[#F3E2D5]"
+          >
+            Delete
+          </button>
+
+        </div>
+
+      </div>
+    </article>
+  );
+}

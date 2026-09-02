@@ -5,6 +5,8 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 
+
+
 export default function RegisterPage() {
   const router = useRouter();
 
@@ -158,4 +160,5 @@ export default function RegisterPage() {
       </div>
     </main>
   );
+
 }
