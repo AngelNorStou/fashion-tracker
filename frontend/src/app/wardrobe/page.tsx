@@ -30,6 +30,14 @@ type ClothingFormData = {
   tagIds: number[];
   file?: File | null;
 };
+
+type Category = {
+  id: number;
+  name: string;
+  slug: string;
+  parentId: number | null;
+};
+
 export default function WardrobePage() {
   const [items, setItems] = useState<ClothingItem[]>([]);
   const [search, setSearch] = useState("");
@@ -40,6 +48,9 @@ export default function WardrobePage() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingItem, setEditingItem] =
     useState<ClothingItem | null>(null);
+
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoryId, setCategoryId] = useState("");
 
   /*
    * Load the current user's wardrobe
@@ -68,10 +79,34 @@ export default function WardrobePage() {
   /*
    * Load wardrobe when the page opens
    */
-  useEffect(() => {
-    loadWardrobe();
-  }, []);
+    useEffect(() => {
+      async function loadInitialData() {
+        try {
+          setLoading(true);
+          setError("");
 
+          const [clothingData, categoryData] = await Promise.all([
+            apiFetch("/api/clothing"),
+            apiFetch("/api/categories"),
+          ]);
+
+          setItems(clothingData);
+          setCategories(categoryData);
+        } catch (err) {
+          console.error("Failed to load wardrobe:", err);
+
+          setError(
+            err instanceof Error
+              ? err.message
+              : "Unable to load your wardrobe."
+          );
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      loadInitialData();
+    }, []);
   /*
    * Create clothing item
    */
@@ -181,20 +216,22 @@ export default function WardrobePage() {
   /*
    * Search/filter clothing on the client for now.
    */
-  const filteredItems = items.filter((item) => {
-    const query = search.toLowerCase().trim();
+    const filteredItems = items.filter((item) => {
+      const query = search.toLowerCase().trim();
 
-    if (!query) {
-      return true;
-    }
+      const matchesSearch =
+        !query ||
+        item.name.toLowerCase().includes(query) ||
+        item.brand.toLowerCase().includes(query) ||
+        item.color.toLowerCase().includes(query) ||
+        item.categoryName.toLowerCase().includes(query);
 
-    return (
-      item.name.toLowerCase().includes(query) ||
-      item.brand.toLowerCase().includes(query) ||
-      item.color.toLowerCase().includes(query) ||
-      item.categoryName.toLowerCase().includes(query)
-    );
-  });
+      const matchesCategory =
+        !categoryId ||
+        item.categoryId.toString() === categoryId;
+
+      return matchesSearch && matchesCategory;
+    });
 
   return (
     <AuthGuard>
@@ -232,10 +269,13 @@ export default function WardrobePage() {
           {/* =========================
               FILTERS
           ========================== */}
-          <WardrobeFilters
-            search={search}
-            setSearch={setSearch}
-          />
+            <WardrobeFilters
+              search={search}
+              setSearch={setSearch}
+              categories={categories}
+              categoryId={categoryId}
+              setCategoryId={setCategoryId}
+            />
 
           {/* =========================
               LOADING
@@ -286,21 +326,23 @@ export default function WardrobePage() {
             ADD CLOTHING MODAL
         ========================== */}
         {showAddForm && (
-          <ClothingForm
-            onSubmit={handleCreate}
-            onCancel={() => setShowAddForm(false)}
-          />
+            <ClothingForm
+              categories={categories}
+              onSubmit={handleCreate}
+              onCancel={() => setShowAddForm(false)}
+            />
         )}
 
         {/* =========================
             EDIT CLOTHING MODAL
         ========================== */}
         {editingItem && (
-          <ClothingForm
-            item={editingItem}
-            onSubmit={handleUpdate}
-            onCancel={() => setEditingItem(null)}
-          />
+            <ClothingForm
+              item={editingItem}
+              categories={categories}
+              onSubmit={handleUpdate}
+              onCancel={() => setEditingItem(null)}
+            />
         )}
       </main>
     </AuthGuard>

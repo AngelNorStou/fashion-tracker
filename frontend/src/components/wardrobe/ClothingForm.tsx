@@ -14,6 +14,13 @@ type ClothingItem = {
   tagIds: number[];
 };
 
+type Category = {
+  id: number;
+  name: string;
+  slug: string;
+  parentId: number | null;
+};
+
 type ClothingFormData = {
   name: string;
   brand: string;
@@ -26,12 +33,14 @@ type ClothingFormData = {
 
 type ClothingFormProps = {
   item?: ClothingItem | null;
+  categories: Category[];
   onSubmit: (data: ClothingFormData) => Promise<void>;
   onCancel: () => void;
 };
 
 export default function ClothingForm({
   item,
+  categories,
   onSubmit,
   onCancel,
 }: ClothingFormProps) {
@@ -163,24 +172,28 @@ export default function ClothingForm({
           </div>
 
           {/* Category */}
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
-              Category ID
-            </label>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
+                Category
+              </label>
 
-            <input
-              required
-              type="number"
-              value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-              className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#C1592F]"
-              placeholder="17"
-            />
+              <select
+                required
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#2B2620] outline-none focus:border-[#C1592F]"
+              >
+                <option value="" disabled>
+                  Select a category
+                </option>
 
-            <p className="mt-1 text-xs text-[#A69C8C]">
-              We'll replace this with a category dropdown next.
-            </p>
-          </div>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
           {/* Image */}
           <div>

@@ -3,11 +3,24 @@
 type WardrobeFiltersProps = {
   search: string;
   setSearch: (value: string) => void;
+  categories: Category[];
+  categoryId: string;
+  setCategoryId: (value: string) => void;
+};
+
+type Category = {
+  id: number;
+  name: string;
+  slug: string;
+  parentId: number | null;
 };
 
 export default function WardrobeFilters({
   search,
   setSearch,
+  categories,
+  categoryId,
+  setCategoryId,
 }: WardrobeFiltersProps) {
   return (
     <div className="mt-8 flex flex-col gap-3 lg:flex-row">
@@ -40,17 +53,21 @@ export default function WardrobeFilters({
       </div>
 
       {/* Category */}
-      <select
-        className="rounded-xl border border-[#E3DACB] bg-[#FFFDF9] px-4 py-3 text-sm text-[#5C5344] outline-none focus:border-[#C1592F]"
-        defaultValue=""
-      >
-        <option value="">All categories</option>
-        <option value="shirts">Shirts</option>
-        <option value="hoodies">Hoodies</option>
-        <option value="pants">Pants</option>
-        <option value="shoes">Shoes</option>
-        <option value="jackets">Jackets</option>
-      </select>
+        <select
+          value={categoryId}
+          onChange={(e) => setCategoryId(e.target.value)}
+          className="rounded-xl border border-[#E3DACB] bg-white px-4 py-3 text-sm text-[#5C5344] outline-none focus:border-[#C1592F]"
+        >
+          <option value="">
+            All categories
+          </option>
+
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
 
       {/* Color */}
       <select
