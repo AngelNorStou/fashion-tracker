@@ -9,16 +9,21 @@ type ClothingItem = {
   color: string;
   size: string;
   imagePath: string | null;
+  categoryId: number;
   categoryName: string;
   tagIds: number[];
 };
 
 type WardrobeGridProps = {
   items: ClothingItem[];
+  onEdit: (item: ClothingItem) => void;
+  onDelete: (item: ClothingItem) => void;
 };
 
 export default function WardrobeGrid({
   items,
+  onEdit,
+  onDelete,
 }: WardrobeGridProps) {
   if (items.length === 0) {
     return (
@@ -40,6 +45,8 @@ export default function WardrobeGrid({
         <ClothingCard
           key={item.id}
           item={item}
+          onEdit={onEdit}
+          onDelete={onDelete}
         />
       ))}
     </div>
