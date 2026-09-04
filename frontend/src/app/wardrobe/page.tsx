@@ -6,6 +6,7 @@ import AuthGuard from "@/components/AuthGuard";
 import WardrobeFilters from "@/components/wardrobe/WardrobeFilters";
 import WardrobeGrid from "@/components/wardrobe/WardrobeGrid";
 import ClothingForm from "@/components/wardrobe/ClothingForm";
+import TagManager from "@/components/wardrobe/TagManager";
 
 type ClothingItem = {
   id: number;
@@ -38,19 +39,28 @@ type Category = {
   parentId: number | null;
 };
 
+type Tag = {
+  id: number;
+  name: string;
+};
+
 export default function WardrobePage() {
-  const [items, setItems] = useState<ClothingItem[]>([]);
-  const [search, setSearch] = useState("");
+    const [items, setItems] = useState<ClothingItem[]>([]);
+    const [search, setSearch] = useState("");
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [editingItem, setEditingItem] =
+    const [showAddForm, setShowAddForm] = useState(false);
+    const [editingItem, setEditingItem] =
     useState<ClothingItem | null>(null);
 
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [categoryId, setCategoryId] = useState("");
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [categoryId, setCategoryId] = useState("");
+
+    const [tags, setTags] = useState<Tag[]>([]);
+    const [tagId, setTagId] = useState("");
+    const [showTagManager, setShowTagManager] = useState(false);
 
   /*
    * Load the current user's wardrobe
@@ -85,13 +95,16 @@ export default function WardrobePage() {
           setLoading(true);
           setError("");
 
-          const [clothingData, categoryData] = await Promise.all([
-            apiFetch("/api/clothing"),
-            apiFetch("/api/categories"),
-          ]);
+          const [clothingData, categoryData, tagData] =
+            await Promise.all([
+              apiFetch("/api/clothing"),
+              apiFetch("/api/categories"),
+              apiFetch("/api/tags"),
+            ]);
 
           setItems(clothingData);
           setCategories(categoryData);
+          setTags(tagData);
         } catch (err) {
           console.error("Failed to load wardrobe:", err);
 
@@ -230,9 +243,19 @@ export default function WardrobePage() {
         !categoryId ||
         item.categoryId.toString() === categoryId;
 
-      return matchesSearch && matchesCategory;
-    });
+      const matchesTag =
+        !tagId ||
+        item.tagIds.includes(Number(tagId));
 
+      return matchesSearch && matchesCategory && matchesTag;
+    });
+  /*
+   * Reload Tags
+   */
+    async function loadTags() {
+      const data = await apiFetch("/api/tags");
+      setTags(data);
+    }
   return (
     <AuthGuard>
       <main className="min-h-[calc(100vh-4rem)] bg-[#F7F3EC]">
@@ -257,13 +280,23 @@ export default function WardrobePage() {
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setShowAddForm(true)}
-              className="rounded-xl bg-[#C1592F] px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-[#9A4A25]"
-            >
-              + Add clothing
-            </button>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setShowTagManager(true)}
+                className="rounded-xl border border-[#D8CFC1] bg-[#FFFDF9] px-5 py-3 text-sm font-medium text-[#5C5344] hover:bg-[#F3EDE4]"
+              >
+                Manage tags
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowAddForm(true)}
+                className="rounded-xl bg-[#C1592F] px-5 py-3 text-sm font-medium text-white hover:bg-[#9A4A25]"
+              >
+                + Add clothing
+              </button>
+            </div>
           </div>
 
           {/* =========================
@@ -275,6 +308,9 @@ export default function WardrobePage() {
               categories={categories}
               categoryId={categoryId}
               setCategoryId={setCategoryId}
+              tags={tags}
+              tagId={tagId}
+              setTagId={setTagId}
             />
 
           {/* =========================
@@ -328,6 +364,7 @@ export default function WardrobePage() {
         {showAddForm && (
             <ClothingForm
               categories={categories}
+              tags={tags}
               onSubmit={handleCreate}
               onCancel={() => setShowAddForm(false)}
             />
@@ -340,9 +377,20 @@ export default function WardrobePage() {
             <ClothingForm
               item={editingItem}
               categories={categories}
+              tags={tags}
               onSubmit={handleUpdate}
               onCancel={() => setEditingItem(null)}
             />
+        )}
+        {/* =========================
+            EDIT TAGS MODAL
+        ========================== */}
+        {showTagManager && (
+          <TagManager
+            tags={tags}
+            onTagsChanged={loadTags}
+            onClose={() => setShowTagManager(false)}
+          />
         )}
       </main>
     </AuthGuard>

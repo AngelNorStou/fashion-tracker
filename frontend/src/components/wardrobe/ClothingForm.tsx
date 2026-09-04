@@ -2,6 +2,11 @@
 
 import { FormEvent, useState } from "react";
 
+type Tag = {
+  id: number;
+  name: string;
+};
+
 type ClothingItem = {
   id: number;
   name: string;
@@ -34,13 +39,16 @@ type ClothingFormData = {
 type ClothingFormProps = {
   item?: ClothingItem | null;
   categories: Category[];
+  tags: Tag[];
   onSubmit: (data: ClothingFormData) => Promise<void>;
   onCancel: () => void;
 };
 
+
 export default function ClothingForm({
   item,
   categories,
+  tags,
   onSubmit,
   onCancel,
 }: ClothingFormProps) {
@@ -56,6 +64,9 @@ export default function ClothingForm({
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>(
+    item?.tagIds ?? []
+  );
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -70,7 +81,7 @@ export default function ClothingForm({
         color,
         size,
         categoryId: Number(categoryId),
-        tagIds: item?.tagIds ?? [],
+        tagIds: selectedTagIds,
         file,
       });
     } catch (err) {
@@ -195,6 +206,45 @@ export default function ClothingForm({
               </select>
             </div>
 
+          {/* Tags */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-[#5C5344]">
+                Tags
+              </label>
+
+              {tags.length === 0 ? (
+                <p className="text-sm text-[#8A8172]">
+                  You don't have any tags yet.
+                </p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((tag) => {
+                    const selected = selectedTagIds.includes(tag.id);
+
+                    return (
+                      <button
+                        key={tag.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedTagIds((current) =>
+                            selected
+                              ? current.filter((id) => id !== tag.id)
+                              : [...current, tag.id]
+                          );
+                        }}
+                        className={`rounded-full border px-3 py-1.5 text-sm transition ${
+                          selected
+                            ? "border-[#C1592F] bg-[#C1592F] text-white"
+                            : "border-[#D8CFC1] bg-white text-[#5C5344] hover:bg-[#F3EDE4]"
+                        }`}
+                      >
+                        {tag.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           {/* Image */}
           <div>
             <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
