@@ -14,6 +14,7 @@ type ClothingItem = {
   brand: string;
   color: string;
   size: string;
+  gender: "MEN" | "WOMEN" | "UNISEX" | null;
   imagePath: string | null;
   categoryId: number;
   categoryName: string;
@@ -27,6 +28,7 @@ type ClothingFormData = {
   brand: string;
   color: string;
   size: string;
+  gender: "MEN" | "WOMEN" | "UNISEX" | null;
   categoryId: number;
   tagIds: number[];
   file?: File | null;
@@ -61,6 +63,8 @@ export default function WardrobePage() {
     const [tags, setTags] = useState<Tag[]>([]);
     const [tagId, setTagId] = useState("");
     const [showTagManager, setShowTagManager] = useState(false);
+
+    const [color, setColor] = useState("");
 
   /*
    * Load the current user's wardrobe
@@ -131,6 +135,7 @@ export default function WardrobePage() {
         brand: data.brand,
         color: data.color,
         size: data.size,
+        gender: data.gender,
         categoryId: data.categoryId,
         tagIds: data.tagIds,
       };
@@ -172,6 +177,7 @@ export default function WardrobePage() {
         brand: data.brand,
         color: data.color,
         size: data.size,
+        gender: data.gender,
         categoryId: data.categoryId,
         tagIds: data.tagIds,
       };
@@ -229,6 +235,14 @@ export default function WardrobePage() {
   /*
    * Search/filter clothing on the client for now.
    */
+    const colors = Array.from(
+      new Set(
+        items
+          .map((item) => item.color.trim())
+          .filter(Boolean)
+      )
+    ).sort();
+
     const filteredItems = items.filter((item) => {
       const query = search.toLowerCase().trim();
 
@@ -243,11 +257,20 @@ export default function WardrobePage() {
         !categoryId ||
         item.categoryId.toString() === categoryId;
 
+      const matchesColor =
+        !color ||
+        item.color.toLowerCase() === color.toLowerCase();
+
       const matchesTag =
         !tagId ||
         item.tagIds.includes(Number(tagId));
 
-      return matchesSearch && matchesCategory && matchesTag;
+      return (
+        matchesSearch &&
+        matchesCategory &&
+        matchesColor &&
+        matchesTag
+      );
     });
   /*
    * Reload Tags
@@ -308,11 +331,13 @@ export default function WardrobePage() {
               categories={categories}
               categoryId={categoryId}
               setCategoryId={setCategoryId}
+              colors={colors}
+              color={color}
+              setColor={setColor}
               tags={tags}
               tagId={tagId}
               setTagId={setTagId}
             />
-
           {/* =========================
               LOADING
           ========================== */}
@@ -349,11 +374,12 @@ export default function WardrobePage() {
                 </p>
               </div>
 
-              <WardrobeGrid
-                items={filteredItems}
-                onEdit={setEditingItem}
-                onDelete={handleDelete}
-              />
+                <WardrobeGrid
+                  items={filteredItems}
+                  tags={tags}
+                  onEdit={setEditingItem}
+                  onDelete={handleDelete}
+                />
             </>
           )}
         </div>

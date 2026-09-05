@@ -68,6 +68,7 @@ public class ClothingItemService {
         item.setBrand(request.brand());
         item.setColor(request.color());
         item.setSize(request.size());
+        item.setGender(request.gender());
         item.setTags(tags);
 
         if (file != null && !file.isEmpty()) {
@@ -157,6 +158,10 @@ public class ClothingItemService {
 
         if (request.size() != null) {
             item.setSize(request.size());
+        }
+
+        if (request.gender() != null) {
+            item.setGender(request.gender());
         }
 
         if (request.imagePath() != null) {
@@ -267,6 +272,7 @@ public class ClothingItemService {
                 item.getBrand(),
                 item.getColor(),
                 item.getSize(),
+                item.getGender(),
                 item.getImagePath(),
                 item.getCategory().getId(),
                 item.getCategory().getName(),

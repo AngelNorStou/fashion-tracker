@@ -1,18 +1,33 @@
 "use client";
 
-type WardrobeFiltersProps = {
-  search: string;
-  setSearch: (value: string) => void;
-  categories: Category[];
-  categoryId: string;
-  setCategoryId: (value: string) => void;
-};
-
 type Category = {
   id: number;
   name: string;
   slug: string;
   parentId: number | null;
+};
+
+type Tag = {
+  id: number;
+  name: string;
+};
+
+type WardrobeFiltersProps = {
+  search: string;
+  setSearch: (value: string) => void;
+
+  categories: Category[];
+  categoryId: string;
+  setCategoryId: (value: string) => void;
+
+  color: string;
+  setColor: (value: string) => void;
+
+  tags: Tag[];
+  tagId: string;
+  setTagId: (value: string) => void;
+
+  colors: string[];
 };
 
 export default function WardrobeFilters({
@@ -21,6 +36,12 @@ export default function WardrobeFilters({
   categories,
   categoryId,
   setCategoryId,
+  color,
+  setColor,
+  colors,
+  tags,
+  tagId,
+  setTagId,
 }: WardrobeFiltersProps) {
   return (
     <div className="mt-8 flex flex-col gap-3 lg:flex-row">
@@ -70,29 +91,36 @@ export default function WardrobeFilters({
         </select>
 
       {/* Color */}
-      <select
-        className="rounded-xl border border-[#E3DACB] bg-[#FFFDF9] px-4 py-3 text-sm text-[#5C5344] outline-none focus:border-[#C1592F]"
-        defaultValue=""
-      >
-        <option value="">All colors</option>
-        <option value="black">Black</option>
-        <option value="white">White</option>
-        <option value="blue">Blue</option>
-        <option value="red">Red</option>
-        <option value="green">Green</option>
-      </select>
+        <select
+          value={color}
+          onChange={(e) => setColor(e.target.value)}
+          className="rounded-xl border border-[#E3DACB] bg-white px-4 py-3 text-sm text-[#5C5344] outline-none focus:border-[#C1592F]"
+        >
+          <option value="">
+            All colors
+          </option>
 
-      {/* Tags */}
-      <select
-        className="rounded-xl border border-[#E3DACB] bg-[#FFFDF9] px-4 py-3 text-sm text-[#5C5344] outline-none focus:border-[#C1592F]"
-        defaultValue=""
-      >
-        <option value="">All tags</option>
-        <option value="1">Casual</option>
-        <option value="2">Formal</option>
-        <option value="3">Summer</option>
-        <option value="4">Winter</option>
-      </select>
+          {colors.map((colorOption) => (
+            <option key={colorOption} value={colorOption}>
+              {colorOption}
+            </option>
+          ))}
+        </select>
+
+        {/* Tags */}
+        <select
+          value={tagId}
+          onChange={(e) => setTagId(e.target.value)}
+          className="rounded-xl border border-[#E3DACB] bg-[#FFFDF9] px-4 py-3 text-sm text-[#5C5344] outline-none focus:border-[#C1592F]"
+        >
+          <option value="">All tags</option>
+
+          {tags.map((tag) => (
+            <option key={tag.id} value={tag.id}>
+              {tag.name}
+            </option>
+          ))}
+        </select>
 
     </div>
   );

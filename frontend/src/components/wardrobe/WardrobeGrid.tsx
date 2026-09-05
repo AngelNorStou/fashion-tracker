@@ -2,6 +2,11 @@
 
 import ClothingCard from "./ClothingCard";
 
+type Tag = {
+  id: number;
+  name: string;
+};
+
 type ClothingItem = {
   id: number;
   name: string;
@@ -16,12 +21,13 @@ type ClothingItem = {
 
 type WardrobeGridProps = {
   items: ClothingItem[];
+  tags: Tag[];
   onEdit: (item: ClothingItem) => void;
   onDelete: (item: ClothingItem) => void;
 };
-
 export default function WardrobeGrid({
   items,
+  tags,
   onEdit,
   onDelete,
 }: WardrobeGridProps) {
@@ -41,14 +47,15 @@ export default function WardrobeGrid({
 
   return (
     <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {items.map((item) => (
-        <ClothingCard
-          key={item.id}
-          item={item}
-          onEdit={onEdit}
-          onDelete={onDelete}
-        />
-      ))}
+        {items.map((item) => (
+          <ClothingCard
+            key={item.id}
+            item={item}
+            tags={tags}
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
+        ))}
     </div>
   );
 }

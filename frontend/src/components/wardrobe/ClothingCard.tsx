@@ -14,12 +14,18 @@ type ClothingItem = {
 
 type ClothingCardProps = {
   item: ClothingItem;
+  tags: Tag[];
   onEdit: (item: ClothingItem) => void;
   onDelete: (item: ClothingItem) => void;
+};
+type Tag = {
+  id: number;
+  name: string;
 };
 
 export default function ClothingCard({
   item,
+  tags,
   onEdit,
   onDelete,
 }: ClothingCardProps) {
@@ -85,14 +91,22 @@ export default function ClothingCard({
 
         {item.tagIds.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-2">
-            {item.tagIds.map((tagId) => (
-              <span
-                key={tagId}
-                className="rounded-full bg-[#F1EADF] px-2.5 py-1 text-xs text-[#6D6253]"
-              >
-                Tag {tagId}
-              </span>
-            ))}
+            {item.tagIds.map((tagId) => {
+              const tag = tags.find((tag) => tag.id === tagId);
+
+              if (!tag) {
+                return null;
+              }
+
+              return (
+                <span
+                  key={tag.id}
+                  className="rounded-full bg-[#F0E9DE] px-3 py-1 text-xs text-[#6B6255]"
+                >
+                  {tag.name}
+                </span>
+              );
+            })}
           </div>
         )}
 

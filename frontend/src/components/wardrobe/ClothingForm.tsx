@@ -13,6 +13,7 @@ type ClothingItem = {
   brand: string;
   color: string;
   size: string;
+  gender: "MEN" | "WOMEN" | "UNISEX";
   imagePath: string | null;
   categoryId: number;
   categoryName: string;
@@ -31,6 +32,7 @@ type ClothingFormData = {
   brand: string;
   color: string;
   size: string;
+  gender: "MEN" | "WOMEN" | "UNISEX";
   categoryId: number;
   tagIds: number[];
   file?: File | null;
@@ -56,6 +58,11 @@ export default function ClothingForm({
   const [brand, setBrand] = useState(item?.brand ?? "");
   const [color, setColor] = useState(item?.color ?? "");
   const [size, setSize] = useState(item?.size ?? "");
+
+  const [gender, setGender] = useState<
+    "MEN" | "WOMEN" | "UNISEX"
+  >(item?.gender ?? "UNISEX");
+
   const [categoryId, setCategoryId] = useState(
     item?.categoryId?.toString() ?? ""
   );
@@ -80,6 +87,7 @@ export default function ClothingForm({
         brand,
         color,
         size,
+        gender,
         categoryId: Number(categoryId),
         tagIds: selectedTagIds,
         file,
@@ -149,61 +157,102 @@ export default function ClothingForm({
             />
           </div>
 
-          {/* Color + Size */}
-          <div className="grid grid-cols-2 gap-4">
+            {/* Color + Size */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
+                  Color
+                </label>
 
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
-                Color
-              </label>
+                <input
+                  required
+                  value={color}
+                  onChange={(e) => setColor(e.target.value)}
+                  className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#C1592F]"
+                  placeholder="Blue"
+                />
+              </div>
 
-              <input
-                required
-                value={color}
-                onChange={(e) => setColor(e.target.value)}
-                className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#C1592F]"
-                placeholder="Blue"
-              />
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
+                  Size
+                </label>
+
+                <input
+                  required
+                  value={size}
+                  onChange={(e) => setSize(e.target.value)}
+                  className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#C1592F]"
+                  placeholder="M"
+                />
+              </div>
             </div>
 
+            {/* Gender */}
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
-                Size
-              </label>
-
-              <input
-                required
-                value={size}
-                onChange={(e) => setSize(e.target.value)}
-                className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#C1592F]"
-                placeholder="M"
-              />
-            </div>
-
-          </div>
-
-          {/* Category */}
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
-                Category
+              <label
+                htmlFor="gender"
+                className="mb-1.5 block text-sm font-medium text-[#5C5344]"
+              >
+                Gender
               </label>
 
               <select
-                required
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
+                id="gender"
+                value={gender}
+                onChange={(e) =>
+                  setGender(e.target.value as "MEN" | "WOMEN" | "UNISEX")
+                }
                 className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#2B2620] outline-none focus:border-[#C1592F]"
               >
-                <option value="" disabled>
-                  Select a category
-                </option>
-
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
+                <option value="MEN">Men</option>
+                <option value="WOMEN">Women</option>
+                <option value="UNISEX">Unisex</option>
               </select>
+            </div>
+          {/* Category */}
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
+                    Category
+                  </label>
+
+                  <select
+                    required
+                    value={categoryId}
+                    onChange={(e) => setCategoryId(e.target.value)}
+                    className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#2B2620] outline-none focus:border-[#C1592F]"
+                  >
+                    <option value="" disabled>
+                      Select a category
+                    </option>
+
+                    {categories
+                      .filter((category) => category.parentId === null)
+                      .map((parent) => {
+                        const children = categories.filter(
+                          (category) => category.parentId === parent.id
+                        );
+
+                        if (children.length === 0) {
+                          return (
+                            <option key={parent.id} value={parent.id}>
+                              {parent.name}
+                            </option>
+                          );
+                        }
+
+                        return (
+                          <optgroup key={parent.id} label={parent.name}>
+                            {children.map((child) => (
+                              <option key={child.id} value={child.id}>
+                                {child.name}
+                              </option>
+                            ))}
+                          </optgroup>
+                        );
+                      })}
+                  </select>
+                </div>
             </div>
 
           {/* Tags */}

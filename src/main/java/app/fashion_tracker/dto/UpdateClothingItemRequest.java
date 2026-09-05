@@ -1,6 +1,8 @@
 package app.fashion_tracker.dto;
 
 import jakarta.validation.constraints.Size;
+import app.fashion_tracker.model.Gender;
+
 
 import java.util.Set;
 
@@ -17,6 +19,8 @@ public record UpdateClothingItemRequest(
 
         @Size(max = 30)
         String size,
+
+        Gender gender,
 
         Long categoryId,
 

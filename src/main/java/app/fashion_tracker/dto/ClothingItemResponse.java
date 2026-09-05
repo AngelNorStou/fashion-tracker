@@ -1,5 +1,7 @@
 package app.fashion_tracker.dto;
 
+import app.fashion_tracker.model.Gender;
+
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -10,6 +12,7 @@ public record ClothingItemResponse(
         String brand,
         String color,
         String size,
+        Gender gender,
         String imagePath,
         Long categoryId,
         String categoryName,

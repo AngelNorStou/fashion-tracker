@@ -34,6 +34,10 @@ public class ClothingItem {
     @Column(length = 30)
     private String size;
 
+    @Column(length = 20)
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
     @Column(name = "image_path", length = 500)
     private String imagePath;
 
@@ -140,5 +144,13 @@ public class ClothingItem {
 
     public void setTags(Set<Tag> tags) {
         this.tags = tags;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 }
