@@ -210,49 +210,48 @@ export default function ClothingForm({
                 <option value="UNISEX">Unisex</option>
               </select>
             </div>
-          {/* Category */}
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
-                    Category
-                  </label>
+            {/* Category */}
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
+                Category
+              </label>
 
-                  <select
-                    required
-                    value={categoryId}
-                    onChange={(e) => setCategoryId(e.target.value)}
-                    className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#2B2620] outline-none focus:border-[#C1592F]"
-                  >
-                    <option value="" disabled>
-                      Select a category
-                    </option>
+              <select
+                required
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#2B2620] outline-none focus:border-[#C1592F]"
+              >
+                <option value="" disabled>
+                  Select a category
+                </option>
 
-                    {categories
-                      .filter((category) => category.parentId === null)
-                      .map((parent) => {
-                        const children = categories.filter(
-                          (category) => category.parentId === parent.id
-                        );
+                {categories
+                  .filter((category) => category.parentId === null)
+                  .map((parent) => {
+                    const children = categories.filter(
+                      (category) => category.parentId === parent.id
+                    );
 
-                        if (children.length === 0) {
-                          return (
-                            <option key={parent.id} value={parent.id}>
-                              {parent.name}
-                            </option>
-                          );
-                        }
+                    if (children.length === 0) {
+                      return (
+                        <option key={parent.id} value={parent.id}>
+                          {parent.name}
+                        </option>
+                      );
+                    }
 
-                        return (
-                          <optgroup key={parent.id} label={parent.name}>
-                            {children.map((child) => (
-                              <option key={child.id} value={child.id}>
-                                {child.name}
-                              </option>
-                            ))}
-                          </optgroup>
-                        );
-                      })}
-                  </select>
-                </div>
+                    return (
+                      <optgroup key={parent.id} label={parent.name}>
+                        {children.map((child) => (
+                          <option key={child.id} value={child.id}>
+                            {child.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                    );
+                  })}
+              </select>
             </div>
 
           {/* Tags */}

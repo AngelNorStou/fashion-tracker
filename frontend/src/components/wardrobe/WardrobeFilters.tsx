@@ -72,8 +72,7 @@ export default function WardrobeFilters({
         </svg>
 
       </div>
-
-      {/* Category */}
+        {/* Category */}
         <select
           value={categoryId}
           onChange={(e) => setCategoryId(e.target.value)}
@@ -83,11 +82,31 @@ export default function WardrobeFilters({
             All categories
           </option>
 
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
-          ))}
+          {categories
+            .filter((category) => category.parentId === null)
+            .map((parent) => {
+              const children = categories.filter(
+                (category) => category.parentId === parent.id
+              );
+
+              if (children.length === 0) {
+                return (
+                  <option key={parent.id} value={parent.id}>
+                    {parent.name}
+                  </option>
+                );
+              }
+
+              return (
+                <optgroup key={parent.id} label={parent.name}>
+                  {children.map((child) => (
+                    <option key={child.id} value={child.id}>
+                      {child.name}
+                    </option>
+                  ))}
+                </optgroup>
+              );
+            })}
         </select>
 
       {/* Color */}
