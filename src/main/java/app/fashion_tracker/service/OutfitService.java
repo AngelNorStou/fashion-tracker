@@ -118,11 +118,28 @@ public class OutfitService {
 
         if (clothingItemIds != null) {
 
-            // Remove existing clothing items
-            outfit.getItems().clear();
+            // Remove duplicates from the request
+            java.util.Set<Long> selectedIds = new java.util.HashSet<>(clothingItemIds);
 
-            // Add the new clothing items
-            for (Long clothingItemId : clothingItemIds) {
+            // Remove items that are no longer selected
+            outfit.getItems().removeIf(outfitItem ->
+                    !selectedIds.contains(
+                            outfitItem.getClothingItem().getId()
+                    )
+            );
+
+            // IDs of items that are already part of the outfit
+            java.util.Set<Long> existingIds = outfit.getItems()
+                    .stream()
+                    .map(outfitItem -> outfitItem.getClothingItem().getId())
+                    .collect(java.util.stream.Collectors.toSet());
+
+            // Add only newly selected items
+            for (Long clothingItemId : selectedIds) {
+
+                if (existingIds.contains(clothingItemId)) {
+                    continue;
+                }
 
                 ClothingItem clothingItem = clothingItemRepository.findById(clothingItemId)
                         .orElseThrow(() ->
@@ -131,9 +148,11 @@ public class OutfitService {
                                 )
                         );
 
+                // Make sure the clothing item belongs to this user
                 if (!clothingItem.getUser().getId().equals(userId)) {
                     throw new RuntimeException(
-                            "Clothing item does not belong to this user: " + clothingItemId
+                            "Clothing item does not belong to this user: "
+                                    + clothingItemId
                     );
                 }
 

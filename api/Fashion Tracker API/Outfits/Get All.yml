@@ -8,10 +8,11 @@ http:
   url: http://localhost:8080/api/outfits
   auth:
     type: bearer
-    token: eyJraWQiOiJzN01JNGkwaWJ2Uk5neVc3a3o4S0ZENEt5RzZDQWxBcF9udk1MUXI3VWx3IiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiI0IiwiZXhwIjoxNzg4MjM4MTMyLCJpYXQiOjE3ODgyMzcyMzIsImVtYWlsIjoidXNlcjM0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJ0ZXN0dXNlcjM0In0.JwidlnQ_9l0tAjDvlNCdejTnv7tmu84tDO13fIR9osg
+    token: eyJraWQiOiJzN01JNGkwaWJ2Uk5neVc3a3o4S0ZENEt5RzZDQWxBcF9udk1MUXI3VWx3IiwiYWxnIjoiSFMyNTYifQ.eyJzdWIiOiI0IiwiZXhwIjoxNzg4NjUxNzgwLCJpYXQiOjE3ODg2NTA4ODAsImVtYWlsIjoidXNlcjM0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJ0ZXN0dXNlcjM0In0.hvEGBUVw4TmNuGsIOgNKpAs1ZSvaZUfYOPhReQYkgB4
 
 settings:
   encodeUrl: true
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+  forwardAuthorizationHeader: true
