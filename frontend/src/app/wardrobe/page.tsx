@@ -8,6 +8,8 @@ import WardrobeGrid from "@/components/wardrobe/WardrobeGrid";
 import ClothingForm from "@/components/wardrobe/ClothingForm";
 import TagManager from "@/components/wardrobe/TagManager";
 
+import Pagination from "@/components/Pagination";
+
 type ClothingItem = {
   id: number;
   name: string;
@@ -66,6 +68,8 @@ export default function WardrobePage() {
 
     const [color, setColor] = useState("");
 
+    const ITEMS_PER_PAGE = 8;
+    const [currentPage, setCurrentPage] = useState(1);
   /*
    * Load the current user's wardrobe
    */
@@ -272,6 +276,19 @@ export default function WardrobePage() {
         matchesTag
       );
     });
+
+    useEffect(() => {
+      setCurrentPage(1);
+    }, [search, categoryId, color, tagId]);
+    const totalPages = Math.max(
+      1,
+      Math.ceil(filteredItems.length / ITEMS_PER_PAGE)
+    );
+
+    const paginatedItems = filteredItems.slice(
+      (currentPage - 1) * ITEMS_PER_PAGE,
+      currentPage * ITEMS_PER_PAGE
+    );
   /*
    * Reload Tags
    */
@@ -363,26 +380,29 @@ export default function WardrobePage() {
           {/* =========================
               WARDROBE RESULTS
           ========================== */}
-          {!loading && !error && (
-            <>
-              <div className="mt-8 flex items-center justify-between">
-                <p className="text-sm text-[#8A8172]">
-                  {filteredItems.length}{" "}
-                  {filteredItems.length === 1
-                    ? "item"
-                    : "items"}
-                </p>
-              </div>
+        {!loading && !error && (
+          <>
+            <div className="mt-8 flex items-center justify-between">
+              <p className="text-sm text-[#8A8172]">
+                {filteredItems.length}{" "}
+                {filteredItems.length === 1 ? "item" : "items"}
+              </p>
+            </div>
 
-                <WardrobeGrid
-                  items={filteredItems}
-                  tags={tags}
-                  onEdit={setEditingItem}
-                  onDelete={handleDelete}
-                />
-            </>
-          )}
-        </div>
+            <WardrobeGrid
+              items={paginatedItems}
+              tags={tags}
+              onEdit={setEditingItem}
+              onDelete={handleDelete}
+            />
+
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </>
+        )}
 
         {/* =========================
             ADD CLOTHING MODAL
@@ -418,6 +438,7 @@ export default function WardrobePage() {
             onClose={() => setShowTagManager(false)}
           />
         )}
+    </div>
       </main>
     </AuthGuard>
   );
