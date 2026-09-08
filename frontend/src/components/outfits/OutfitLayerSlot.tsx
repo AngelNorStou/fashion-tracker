@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { LayerEntry, imageUrlFor } from "@/lib/outfitZones";
 
 export default function OutfitLayerSlot({
@@ -23,9 +24,20 @@ export default function OutfitLayerSlot({
   onMoveDown?: (id: number) => void;
   onRemove?: (id: number) => void;
 }) {
-  const offset = 14;
-  const stackHeight =
-    minHeightPx + (entries.length > 1 ? (entries.length - 1) * offset : 0);
+  const [hoveredId, setHoveredId] = useState<number | null>(null);
+
+  // Lowest layerOrder first in the DOM, so later (higher layerOrder,
+  // more "on top") items paint after and sit above their neighbors by
+  // default stacking order.
+  const orderedEntries = [...entries].sort(
+    (a, b) => a.layerOrder - b.layerOrder
+  );
+
+  // Cards scale with the zone's own height (minHeightPx) rather than a
+  // fixed width, so a tall zone like "Full outfit" produces a large,
+  // space-filling card instead of a small thumbnail lost in empty space.
+  const cardHeight = minHeightPx - 24; // leaves room for the row's padding
+  const overlap = Math.round(cardHeight * 0.35);
 
   return (
     <div>
@@ -41,39 +53,50 @@ export default function OutfitLayerSlot({
         )}
       </div>
 
-      <div
-        className="relative rounded-xl border border-dashed border-[#C9BFAF] bg-[#FFFDF9]"
-        style={{ height: stackHeight }}
-      >
-        {entries.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center text-center">
-            <span className="text-lg">{icon}</span>
-            <span className="mt-1 text-[10px] text-[#A69C8C]">
-              {emptyText}
-            </span>
-          </div>
-        ) : (
-          entries.map((entry, idx) => {
+      {entries.length === 0 ? (
+        <div
+          className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#C9BFAF] bg-[#FFFDF9] text-center"
+          style={{ height: minHeightPx }}
+        >
+          <span className="text-lg">{icon}</span>
+          <span className="mt-1 text-[10px] text-[#A69C8C]">
+            {emptyText}
+          </span>
+        </div>
+      ) : (
+        <div
+          className="flex items-center overflow-x-auto rounded-xl border border-dashed border-[#C9BFAF] bg-[#FFFDF9] p-3"
+          style={{ height: minHeightPx }}
+        >
+          {orderedEntries.map((entry, idx) => {
             const imageUrl = imageUrlFor(entry.item);
+            const isHovered = hoveredId === entry.item.id;
 
             return (
               <div
                 key={entry.item.id}
-                className="group/layer absolute overflow-hidden rounded-lg border border-[#E3DACB] bg-white shadow-sm"
+                onMouseEnter={() => setHoveredId(entry.item.id)}
+                onMouseLeave={() => setHoveredId(null)}
+                className="relative aspect-[4/5] flex-shrink-0 overflow-hidden rounded-lg border border-[#E3DACB] bg-white shadow-md transition-transform"
                 style={{
-                  top: idx * offset,
-                  left: idx * offset,
-                  right: (entries.length - 1 - idx) * offset,
-                  bottom: 0,
-                  zIndex: idx + 1,
+                  height: cardHeight,
+                  marginLeft: idx === 0 ? 0 : -overlap,
+                  zIndex: isHovered ? 999 : idx,
+                  transform: isHovered ? "translateY(-6px)" : undefined,
                 }}
               >
-                <div className="absolute left-1.5 top-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-[#2B2620] text-[10px] font-semibold text-white">
+                {/* Layer order badge */}
+                <div className="absolute left-1.5 top-1.5 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-[#2B2620] text-xs font-semibold text-white">
                   {entry.layerOrder}
                 </div>
 
+                {/* Per-item controls, scoped to this zone */}
                 {!readOnly && (
-                  <div className="absolute right-1 top-1 z-10 flex gap-1 opacity-0 transition group-hover/layer:opacity-100">
+                  <div
+                    className={`absolute right-1.5 top-1.5 z-10 flex gap-1 transition ${
+                      isHovered ? "opacity-100" : "opacity-0"
+                    }`}
+                  >
                     <button
                       type="button"
                       onClick={() => onMoveUp?.(entry.item.id)}
@@ -111,22 +134,22 @@ export default function OutfitLayerSlot({
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center px-2 text-center">
-                    <span className="text-[10px] text-[#A69C8C]">
+                    <span className="text-xs text-[#A69C8C]">
                       {entry.item.name}
                     </span>
                   </div>
                 )}
 
-                <div className="absolute bottom-0 left-0 right-0 bg-black/50 px-1.5 py-1">
-                  <p className="truncate text-[10px] font-medium text-white">
+                <div className="absolute bottom-0 left-0 right-0 bg-black/55 px-2 py-1.5">
+                  <p className="truncate text-xs font-medium text-white">
                     {entry.item.name}
                   </p>
                 </div>
               </div>
             );
-          })
-        )}
-      </div>
+          })}
+        </div>
+      )}
     </div>
   );
 }
