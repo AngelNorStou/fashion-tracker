@@ -274,12 +274,11 @@ if (
                 <OutfitLayerPreview entries={layerEntries} readOnly />
               </div>
 
-              <OutfitLayerOrderPanel
-                entries={sortEntriesByZoneThenLayer(layerEntries)}
-                onMoveUp={moveItemUp}
-                onMoveDown={moveItemDown}
-                onRemove={toggleItem}
-              />
+                <OutfitLayerOrderPanel
+                  grouped={grouped}
+                  onMoveUp={moveItemUp}
+                  onMoveDown={moveItemDown}
+                />
             </div>
           </div>
         </div>

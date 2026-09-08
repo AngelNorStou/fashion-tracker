@@ -78,6 +78,13 @@ export default function OutfitCard({
 
         <div className="mt-5 flex gap-2">
           <Link
+            href={`/outfits/${outfit.id}`}
+            className="flex-1 rounded-lg border border-[#D8CFC1] px-3 py-2 text-center text-sm text-[#5C5344] hover:bg-[#F3EDE4]"
+          >
+            View
+          </Link>
+
+          <Link
             href={`/outfits/${outfit.id}/edit`}
             className="flex-1 rounded-lg border border-[#D8CFC1] px-3 py-2 text-center text-sm text-[#5C5344] hover:bg-[#F3EDE4]"
           >

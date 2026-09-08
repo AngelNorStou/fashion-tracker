@@ -1,7 +1,13 @@
 "use client";
 
 import OutfitLayerSlot from "./OutfitLayerSlot";
-import { LayerEntry, imageUrlFor, groupBySlot } from "@/lib/outfitZones";
+import {
+  LayerEntry,
+  imageUrlFor,
+  groupBySlot,
+  getActiveBodyChain,
+  BREADCRUMB_LABELS,
+} from "@/lib/outfitZones";
 
 export default function OutfitLayerPreview({
   entries,
@@ -18,10 +24,11 @@ export default function OutfitLayerPreview({
 }) {
   const grouped = groupBySlot(entries);
   const hasFull = grouped.full.length > 0;
+  const hasBag = grouped.bag.length > 0;
 
   if (entries.length === 0) {
     return (
-      <div className="flex min-h-[420px] flex-col items-center justify-center rounded-xl border border-dashed border-[#C9BFAF] bg-[#FFFDF9] p-4 text-center">
+      <div className="flex min-h-[420px] flex-col items-center justify-center rounded-2xl bg-[#FFFDF9] p-4 text-center">
         <div className="text-5xl">👕</div>
 
         <h4 className="mt-4 text-sm font-medium text-[#5C5344]">
@@ -38,120 +45,56 @@ export default function OutfitLayerPreview({
     );
   }
 
+  const chain = getActiveBodyChain(hasFull);
+
+  const zoneHeights: Record<string, number> = {
+    hat: 64,
+    top: 150,
+    belt: 32,
+    bottom: 150,
+    shoes: 80,
+    full: 420,
+  };
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="flex items-stretch justify-center gap-3">
-        {/* Body column: either the dress/suit stack (Hat -> Shoes -> Full)
-            or the separates stack (Hat -> Top -> Belt -> Bottom -> Shoes).
-            Full Outfit only ever shows up here, centered, never as a
-            standalone side column. */}
-        <div className="flex w-full max-w-xs flex-col gap-3">
-          <OutfitLayerSlot
-            label="Hat"
-            icon="👒"
-            entries={grouped.hat}
-            minHeightPx={64}
-            emptyText="No hat"
-            readOnly={readOnly}
-            onMoveUp={onMoveUp}
-            onMoveDown={onMoveDown}
-            onRemove={onRemove}
-          />
-
-          {hasFull ? (
-            <>
-               <OutfitLayerSlot
-                 label="Full outfit / Dress / Suit"
-                 icon="👗"
-                 entries={grouped.full}
-                 minHeightPx={420}
-                 emptyText="No dress or suit"
-                 readOnly={readOnly}
-                 onMoveUp={onMoveUp}
-                 onMoveDown={onMoveDown}
-                 onRemove={onRemove}
-               />
-
-               <OutfitLayerSlot
-                 label="Shoes"
-                 icon="👟"
-                 entries={grouped.shoes}
-                 minHeightPx={80}
-                 emptyText="No shoes"
-                 readOnly={readOnly}
-                 onMoveUp={onMoveUp}
-                 onMoveDown={onMoveDown}
-                 onRemove={onRemove}
-              />
-            </>
-          ) : (
-            <>
-              <OutfitLayerSlot
-                label="Top"
-                icon="👕"
-                entries={grouped.top}
-                minHeightPx={150}
-                emptyText="No top"
-                readOnly={readOnly}
-                onMoveUp={onMoveUp}
-                onMoveDown={onMoveDown}
-                onRemove={onRemove}
-              />
-
-              <OutfitLayerSlot
-                label="Belt"
-                icon="➖"
-                entries={grouped.belt}
-                minHeightPx={32}
-                emptyText="No belt"
-                readOnly={readOnly}
-                onMoveUp={onMoveUp}
-                onMoveDown={onMoveDown}
-                onRemove={onRemove}
-              />
-
-              <OutfitLayerSlot
-                label="Bottom"
-                icon="👖"
-                entries={grouped.bottom}
-                minHeightPx={150}
-                emptyText="No bottom"
-                readOnly={readOnly}
-                onMoveUp={onMoveUp}
-                onMoveDown={onMoveDown}
-                onRemove={onRemove}
-              />
-
-              <OutfitLayerSlot
-                label="Shoes"
-                icon="👟"
-                entries={grouped.shoes}
-                minHeightPx={80}
-                emptyText="No shoes"
-                readOnly={readOnly}
-                onMoveUp={onMoveUp}
-                onMoveDown={onMoveDown}
-                onRemove={onRemove}
-              />
-            </>
-          )}
+        <div className="flex w-full max-w-xs flex-col gap-2">
+          {chain.map((zone) => (
+            <OutfitLayerSlot
+              key={zone}
+              zone={zone}
+              entries={grouped[zone]}
+              minHeightPx={zoneHeights[zone]}
+              readOnly={readOnly}
+              onMoveUp={onMoveUp}
+              onMoveDown={onMoveDown}
+              onRemove={onRemove}
+            />
+          ))}
         </div>
 
-        {/* Bags stay as their own side column in both layouts. */}
-        <div className="flex w-40 flex-shrink-0 flex-col justify-center">
-          <OutfitLayerSlot
-            label="Bags"
-            icon="👜"
-            entries={grouped.bag}
-            minHeightPx={180}
-            emptyText="No bag"
-            readOnly={readOnly}
-            onMoveUp={onMoveUp}
-            onMoveDown={onMoveDown}
-            onRemove={onRemove}
-          />
-        </div>
+        {hasBag && (
+          <div className="flex w-32 flex-shrink-0 flex-col items-center">
+            <OutfitLayerSlot
+              zone="bag"
+              entries={grouped.bag}
+              minHeightPx={140}
+              readOnly={readOnly}
+              onMoveUp={onMoveUp}
+              onMoveDown={onMoveDown}
+              onRemove={onRemove}
+            />
+
+            <span className="mt-1.5 text-[11px] text-[#8A8172]">Bag</span>
+          </div>
+        )}
       </div>
+
+      {/* Breadcrumb trail describing the current body-zone chain */}
+      <p className="text-center text-[11px] text-[#A69C8C]">
+        {chain.map((z) => BREADCRUMB_LABELS[z]).join(" · ")}
+      </p>
 
       {grouped.other.length > 0 && (
         <div>

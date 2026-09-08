@@ -6,7 +6,6 @@ import {
   ZONE_ORDER,
   ZONE_LABELS,
   ZONE_ICONS,
-  imageUrlFor,
 } from "@/lib/outfitZones";
 
 export default function OutfitItemsPanel({
@@ -21,105 +20,89 @@ export default function OutfitItemsPanel({
   onRemoveItem: (itemId: number) => void;
 }) {
   return (
-    <div className="rounded-2xl border border-[#D8CFC1] bg-[#FFFDF9] p-4">
-      <h3 className="mb-4 text-sm font-semibold text-[#2B2620]">
+    <div className="rounded-2xl bg-[#FFFDF9] p-4">
+      <h3 className="mb-3 text-sm font-semibold text-[#2B2620]">
         Outfit items
       </h3>
 
-      <div className="space-y-1">
+      <div>
         {ZONE_ORDER.map((zone) => {
           const entries = grouped[zone];
           const disabled = disabledZones.has(zone);
+          const active = entries.length > 0;
 
           return (
             <div
               key={zone}
-              className="border-b border-[#EFE8DA] py-3 last:border-b-0"
+              className="border-b border-[#F0E9DC] py-2.5 last:border-b-0"
             >
               <div className="flex items-center justify-between gap-2">
-                <div className="flex min-w-0 items-center gap-2">
-                  <span className="text-base">{ZONE_ICONS[zone]}</span>
-
-                  <span className="truncate text-sm font-medium text-[#2B2620]">
-                    {ZONE_LABELS[zone]}
+                <div className="flex min-w-0 items-center gap-1.5">
+                  <span
+                    className={`text-sm ${
+                      active ? "text-[#C1592F]" : "text-[#C9BFAF]"
+                    }`}
+                  >
+                    {ZONE_ICONS[zone]}
                   </span>
 
-                  {entries.length > 1 && (
-                    <span className="flex-shrink-0 text-xs text-[#A69C8C]">
-                      {entries.length} layers
-                    </span>
-                  )}
+                  <span
+                    className={`truncate text-sm ${
+                      active
+                        ? "font-medium text-[#C1592F]"
+                        : "text-[#8A8172]"
+                    }`}
+                  >
+                    {ZONE_LABELS[zone]}
+                    {active && ` · ${entries.length}`}
+                  </span>
                 </div>
 
                 {!disabled && (
                   <button
                     type="button"
                     onClick={() => onAddClick(zone)}
-                    className="flex-shrink-0 rounded-lg border border-[#D8CFC1] px-2.5 py-1 text-xs font-medium text-[#5C5344] hover:bg-[#F3EDE4]"
+                    className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-base leading-none text-[#8A8172] hover:bg-[#F3EDE4] hover:text-[#5C5344]"
+                    title={`Add ${ZONE_LABELS[zone]}`}
                   >
-                    + Add
+                    +
                   </button>
                 )}
               </div>
 
-              {disabled ? (
-                <p className="mt-2 text-xs italic text-[#A69C8C]">
+              {disabled && (
+                <p className="mt-1.5 text-xs italic text-[#A69C8C]">
                   {zone === "full"
                     ? "Remove top & bottom items to add a dress or suit"
                     : "Disabled — covered by dress or suit"}
                 </p>
-              ) : entries.length === 0 ? (
-                <p className="mt-2 text-xs text-[#A69C8C]">
-                  No {ZONE_LABELS[zone].toLowerCase()}
-                </p>
-              ) : (
-                <div className="mt-2 space-y-1.5">
-                  {entries.map((entry) => {
-                    const imageUrl = imageUrlFor(entry.item);
+              )}
 
-                    return (
-                      <div
-                        key={entry.item.id}
-                        className="flex items-center gap-2.5 rounded-lg bg-[#F7F3EC] px-2 py-1.5"
-                      >
-                        {entries.length > 1 && (
-                          <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#2B2620] text-[10px] font-semibold text-white">
-                            {entry.layerOrder}
-                          </span>
-                        )}
-
-                        <div className="h-9 w-9 flex-shrink-0 overflow-hidden rounded-md bg-[#EEE8DE]">
-                          {imageUrl && (
-                            <img
-                              src={imageUrl}
-                              alt={entry.item.name}
-                              className="h-full w-full object-cover"
-                            />
-                          )}
-                        </div>
-
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-xs font-medium text-[#2B2620]">
-                            {entry.item.name}
-                          </p>
-
-                          <p className="truncate text-[11px] text-[#8A8172]">
-                            {entry.item.categoryName}
-                          </p>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() => onRemoveItem(entry.item.id)}
-                          className="flex-shrink-0 text-xs text-[#C1592F] hover:text-[#9A4A25]"
-                          title={`Remove ${entry.item.name}`}
+              {active && (
+                <div className="mt-1.5 space-y-1">
+                    {entries
+                      .slice()
+                      .sort((a, b) => a.layerOrder - b.layerOrder)
+                      .map((entry) => (
+                        <div
+                          key={entry.item.id}
+                          className="flex items-center justify-between gap-2 pl-6"
                         >
-                          Remove
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
+                          <span className="truncate text-xs text-[#5C5344]">
+                            {entry.item.name}
+                          </span>
+
+                          <button
+                            type="button"
+                            onClick={() => onRemoveItem(entry.item.id)}
+                            className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border border-[#E8B8A4] bg-[#FBEEE6] text-xs font-medium leading-none text-[#C1592F] hover:border-[#C1592F] hover:bg-[#F3E2D5]"
+                            title={`Remove ${entry.item.name}`}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                                    </div>
               )}
             </div>
           );
