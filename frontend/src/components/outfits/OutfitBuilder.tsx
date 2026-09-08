@@ -7,7 +7,6 @@ import OutfitLayerPreview from "./OutfitLayerPreview";
 import OutfitItemsPanel from "./OutfitItemsPanel";
 import OutfitLayerOrderPanel from "./OutfitLayerOrderPanel";
 import OutfitZonePicker from "./OutfitZonePicker";
-
 import {
   Category,
   ClothingItem,
@@ -18,8 +17,47 @@ import {
   buildCategoryZoneMap,
   buildLayerEntries,
   groupBySlot,
-  sortEntriesByZoneThenLayer,
+  canZoneHaveMultiple,
+  buildExcludedCategoryIdSet,
 } from "@/lib/outfitZones";
+
+/**
+ * Safety net for zones that only ever allow one item (everything
+ * except Top). If an outfit somehow ended up with more than one item
+ * in a single-select zone -- e.g. saved before this rule existed --
+ * this keeps only the item with the highest layerOrder (the most
+ * recently placed one) and drops the rest.
+ */
+function collapseSingleSelectZones(
+  items: OutfitItem[],
+  getSlot: (clothingItemId: number) => SlotKey
+): OutfitItem[] {
+  const byZone = new Map<SlotKey, OutfitItem[]>();
+
+  for (const item of items) {
+    const slot = getSlot(item.clothingItemId);
+    const existing = byZone.get(slot) ?? [];
+    existing.push(item);
+    byZone.set(slot, existing);
+  }
+
+  const result: OutfitItem[] = [];
+
+  for (const [slot, zoneItems] of byZone.entries()) {
+    if (canZoneHaveMultiple(slot) || zoneItems.length <= 1) {
+      result.push(...zoneItems);
+      continue;
+    }
+
+    const keep = zoneItems.reduce((a, b) =>
+      b.layerOrder > a.layerOrder ? b : a
+    );
+
+    result.push(keep);
+  }
+
+  return result;
+}
 
 export default function OutfitBuilder({
   outfit,
@@ -32,14 +70,6 @@ export default function OutfitBuilder({
 }) {
   const router = useRouter();
 
-  const [name, setName] = useState(outfit?.name ?? "");
-  const [selectedItems, setSelectedItems] = useState<OutfitItem[]>(
-    outfit?.items ?? []
-  );
-  const [openPickerZone, setOpenPickerZone] = useState<SlotKey | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-
   const categoryZoneMap = buildCategoryZoneMap(categories);
 
   function getSlot(clothingItemId: number): SlotKey {
@@ -48,83 +78,139 @@ export default function OutfitBuilder({
     return categoryZoneMap.get(item.categoryId) ?? "other";
   }
 
-    function toggleItem(itemId: number) {
-      setSelectedItems((current) => {
-        const existingItem = current.find(
-          (item) => item.clothingItemId === itemId
+  const excludedCategoryIds = buildExcludedCategoryIdSet(categories);
+
+  // Items in excluded categories (e.g. Intimates) can still exist in
+  // the wardrobe, but are never offered when building an outfit.
+  const pickableClothingItems = clothingItems.filter(
+    (item) => !excludedCategoryIds.has(item.categoryId)
+  );
+
+  const [name, setName] = useState(outfit?.name ?? "");
+
+  const [selectedItems, setSelectedItems] = useState<OutfitItem[]>(() =>
+    outfit ? collapseSingleSelectZones(outfit.items, getSlot) : []
+  );
+
+  const [openPickerZone, setOpenPickerZone] = useState<SlotKey | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  function toggleItem(itemId: number) {
+    setSelectedItems((current) => {
+      const existingItem = current.find(
+        (item) => item.clothingItemId === itemId
+      );
+
+      if (existingItem) {
+        return current.filter((item) => item.clothingItemId !== itemId);
+      }
+
+      const targetSlot = getSlot(itemId);
+
+      // Dress/suit exclusivity: a full-body item can't coexist with a
+      // top, belt, or bottom, in either direction.
+      const hasFull = current.some(
+        (i) => getSlot(i.clothingItemId) === "full"
+      );
+
+      const bodyZones: SlotKey[] = ["top", "belt", "bottom"];
+
+      const hasBodyItem = current.some((i) =>
+        bodyZones.includes(getSlot(i.clothingItemId))
+      );
+
+      if (targetSlot === "full" && hasBodyItem) return current;
+      if (bodyZones.includes(targetSlot) && hasFull) return current;
+
+      // Most zones only ever hold one item (one pair of shoes, one
+      // belt, one bag, one dress, etc). Only Top supports real
+      // layering -- picking a new item elsewhere replaces whatever
+      // was already selected in that zone.
+      let base = current;
+
+      if (!canZoneHaveMultiple(targetSlot)) {
+        base = current.filter(
+          (i) => getSlot(i.clothingItemId) !== targetSlot
         );
+      }
 
-        if (existingItem) {
-          return current.filter((item) => item.clothingItemId !== itemId);
-        }
+      const sameSlotOrders = base
+        .filter((i) => getSlot(i.clothingItemId) === targetSlot)
+        .map((i) => i.layerOrder);
 
-        const targetSlot = getSlot(itemId);
+      const nextLayer =
+        sameSlotOrders.length > 0 ? Math.max(...sameSlotOrders) + 1 : 1;
 
-        // Enforce dress/suit exclusivity: a full-body item can't coexist
-        // with a top, belt, or bottom, in either direction.
-        const hasFull = current.some(
-          (i) => getSlot(i.clothingItemId) === "full"
-        );
-
-        const bodyZones: SlotKey[] = ["top", "belt", "bottom"];
-
-        const hasBodyItem = current.some((i) =>
-          bodyZones.includes(getSlot(i.clothingItemId))
-        );
-
-        if (targetSlot === "full" && hasBodyItem) return current;
-        if (bodyZones.includes(targetSlot) && hasFull) return current;
-
-        const sameSlotOrders = current
-          .filter((i) => getSlot(i.clothingItemId) === targetSlot)
-          .map((i) => i.layerOrder);
-
-        const nextLayer =
-          sameSlotOrders.length > 0 ? Math.max(...sameSlotOrders) + 1 : 1;
-
-        return [
-          ...current,
-          {
-            clothingItemId: itemId,
-            layerOrder: nextLayer,
-          },
-        ];
-      });
-    }
-  function moveItemUp(clothingItemId: number) {
-    setSelectedItems((current) =>
-      current.map((item) => {
-        if (item.clothingItemId === clothingItemId) {
-          return {
-            ...item,
-            layerOrder: Math.max(1, item.layerOrder - 1),
-          };
-        }
-
-        return item;
-      })
-    );
+      return [
+        ...base,
+        {
+          clothingItemId: itemId,
+          layerOrder: nextLayer,
+        },
+      ];
+    });
   }
 
+  // Moves an item toward the top of its zone's stack (higher
+  // layerOrder = more visible / worn over everything below it).
+  // Swaps with whichever item currently sits directly above it in
+  // the same zone.
+  function moveItemUp(clothingItemId: number) {
+    const targetSlot = getSlot(clothingItemId);
+
+    setSelectedItems((current) => {
+      const zoneItems = current
+        .filter((i) => getSlot(i.clothingItemId) === targetSlot)
+        .sort((a, b) => a.layerOrder - b.layerOrder);
+
+      const idx = zoneItems.findIndex(
+        (i) => i.clothingItemId === clothingItemId
+      );
+
+      if (idx === -1 || idx === zoneItems.length - 1) return current;
+
+      const thisItem = zoneItems[idx];
+      const itemAbove = zoneItems[idx + 1];
+
+      return current.map((item) => {
+        if (item.clothingItemId === thisItem.clothingItemId) {
+          return { ...item, layerOrder: itemAbove.layerOrder };
+        }
+        if (item.clothingItemId === itemAbove.clothingItemId) {
+          return { ...item, layerOrder: thisItem.layerOrder };
+        }
+        return item;
+      });
+    });
+  }
+
+  // Moves an item toward the bottom of its zone's stack. Swaps with
+  // whichever item currently sits directly below it in the same zone.
   function moveItemDown(clothingItemId: number) {
     const targetSlot = getSlot(clothingItemId);
 
     setSelectedItems((current) => {
-      const sameSlotOrders = current
+      const zoneItems = current
         .filter((i) => getSlot(i.clothingItemId) === targetSlot)
-        .map((i) => i.layerOrder);
+        .sort((a, b) => a.layerOrder - b.layerOrder);
 
-      const highestLayer =
-        sameSlotOrders.length > 0 ? Math.max(...sameSlotOrders) : 1;
+      const idx = zoneItems.findIndex(
+        (i) => i.clothingItemId === clothingItemId
+      );
+
+      if (idx <= 0) return current;
+
+      const thisItem = zoneItems[idx];
+      const itemBelow = zoneItems[idx - 1];
 
       return current.map((item) => {
-        if (item.clothingItemId === clothingItemId) {
-          return {
-            ...item,
-            layerOrder: Math.min(highestLayer + 1, item.layerOrder + 1),
-          };
+        if (item.clothingItemId === thisItem.clothingItemId) {
+          return { ...item, layerOrder: itemBelow.layerOrder };
         }
-
+        if (item.clothingItemId === itemBelow.clothingItemId) {
+          return { ...item, layerOrder: thisItem.layerOrder };
+        }
         return item;
       });
     });
@@ -147,9 +233,16 @@ export default function OutfitBuilder({
       setSaving(true);
       setError("");
 
+      // Defensive re-check right before saving, in case anything
+      // slipped past toggleItem during this editing session.
+      const cleanedItems = collapseSingleSelectZones(
+        selectedItems,
+        getSlot
+      );
+
       const body = {
         name: name.trim(),
-        items: selectedItems,
+        items: cleanedItems,
       };
 
       if (outfit) {
@@ -185,24 +278,26 @@ export default function OutfitBuilder({
   const grouped = groupBySlot(layerEntries);
   const selectedIds = new Set(selectedItems.map((i) => i.clothingItemId));
 
-const disabledZones = new Set<SlotKey>();
+  const disabledZones = new Set<SlotKey>();
 
-if (grouped.full.length > 0) {
-  disabledZones.add("top");
-  disabledZones.add("belt");
-  disabledZones.add("bottom");
-}
+  if (grouped.full.length > 0) {
+    disabledZones.add("top");
+    disabledZones.add("belt");
+    disabledZones.add("bottom");
+  }
 
-if (
-  grouped.top.length > 0 ||
-  grouped.belt.length > 0 ||
-  grouped.bottom.length > 0
-) {
-  disabledZones.add("full");
-}
+  if (
+    grouped.top.length > 0 ||
+    grouped.belt.length > 0 ||
+    grouped.bottom.length > 0
+  ) {
+    disabledZones.add("full");
+  }
 
   const pickerItems = openPickerZone
-    ? clothingItems.filter((item) => getSlot(item.id) === openPickerZone)
+    ? pickableClothingItems.filter(
+        (item) => getSlot(item.id) === openPickerZone
+      )
     : [];
 
   return (
@@ -254,7 +349,7 @@ if (
               </span>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-[22%_53%_22%]">
+            <div className="grid min-w-0 gap-6 lg:grid-cols-[22%_53%_22%]">
               <OutfitItemsPanel
                 grouped={grouped}
                 disabledZones={disabledZones}
@@ -274,11 +369,11 @@ if (
                 <OutfitLayerPreview entries={layerEntries} readOnly />
               </div>
 
-                <OutfitLayerOrderPanel
-                  grouped={grouped}
-                  onMoveUp={moveItemUp}
-                  onMoveDown={moveItemDown}
-                />
+              <OutfitLayerOrderPanel
+                grouped={grouped}
+                onMoveUp={moveItemUp}
+                onMoveDown={moveItemDown}
+              />
             </div>
           </div>
         </div>
