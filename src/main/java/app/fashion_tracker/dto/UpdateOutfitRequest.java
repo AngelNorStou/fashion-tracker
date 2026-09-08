@@ -9,7 +9,7 @@ public class UpdateOutfitRequest {
     @Size(max = 100, message = "Outfit name must not exceed 100 characters")
     private String name;
 
-    private List<Long> clothingItemIds;
+    private List<OutfitItemRequest> items;
 
     public UpdateOutfitRequest() {
     }
@@ -22,11 +22,11 @@ public class UpdateOutfitRequest {
         this.name = name;
     }
 
-    public List<Long> getClothingItemIds() {
-        return clothingItemIds;
+    public List<OutfitItemRequest> getItems() {
+        return items;
     }
 
-    public void setClothingItemIds(List<Long> clothingItemIds) {
-        this.clothingItemIds = clothingItemIds;
+    public void setItems(List<OutfitItemRequest> items) {
+        this.items = items;
     }
 }

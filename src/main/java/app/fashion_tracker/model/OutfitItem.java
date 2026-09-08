@@ -20,6 +20,10 @@ public class OutfitItem {
     @JoinColumn(name = "clothing_item_id", nullable = false)
     private ClothingItem clothingItem;
 
+
+    @Column(name = "layer_order", nullable = false)
+    private Integer layerOrder = 1;
+
     public OutfitItem() {
     }
 
@@ -51,5 +55,13 @@ public class OutfitItem {
 
     public void setClothingItem(ClothingItem clothingItem) {
         this.clothingItem = clothingItem;
+    }
+
+    public Integer getLayerOrder() {
+        return layerOrder;
+    }
+
+    public void setLayerOrder(Integer layerOrder) {
+        this.layerOrder = layerOrder;
     }
 }

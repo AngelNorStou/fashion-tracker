@@ -10,7 +10,7 @@ public class OutfitResponse {
 
     private Long id;
     private String name;
-    private List<Long> clothingItemIds;
+    private List<OutfitItemRequest> items;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -20,29 +20,40 @@ public class OutfitResponse {
     public OutfitResponse(
             Long id,
             String name,
-            List<Long> clothingItemIds,
+            List<OutfitItemRequest> items,
             LocalDateTime createdAt,
             LocalDateTime updatedAt
     ) {
         this.id = id;
         this.name = name;
-        this.clothingItemIds = clothingItemIds;
+        this.items = items;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
     public static OutfitResponse fromEntity(Outfit outfit) {
 
-        List<Long> clothingItemIds = outfit.getItems()
+        List<OutfitItemRequest> items = outfit.getItems()
                 .stream()
-                .map(OutfitItem::getClothingItem)
-                .map(clothingItem -> clothingItem.getId())
+                .map(outfitItem -> {
+                    OutfitItemRequest item = new OutfitItemRequest();
+
+                    item.setClothingItemId(
+                            outfitItem.getClothingItem().getId()
+                    );
+
+                    item.setLayerOrder(
+                            outfitItem.getLayerOrder()
+                    );
+
+                    return item;
+                })
                 .toList();
 
         return new OutfitResponse(
                 outfit.getId(),
                 outfit.getName(),
-                clothingItemIds,
+                items,
                 outfit.getCreatedAt(),
                 outfit.getUpdatedAt()
         );
@@ -56,8 +67,8 @@ public class OutfitResponse {
         return name;
     }
 
-    public List<Long> getClothingItemIds() {
-        return clothingItemIds;
+    public List<OutfitItemRequest> getItems() {
+        return items;
     }
 
     public LocalDateTime getCreatedAt() {

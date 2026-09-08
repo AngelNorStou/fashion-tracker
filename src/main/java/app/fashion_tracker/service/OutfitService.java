@@ -1,5 +1,6 @@
 package app.fashion_tracker.service;
 
+import app.fashion_tracker.dto.OutfitItemRequest;
 import app.fashion_tracker.model.ClothingItem;
 import app.fashion_tracker.model.Outfit;
 import app.fashion_tracker.model.OutfitItem;
@@ -34,7 +35,11 @@ public class OutfitService {
     }
 
     @Transactional
-    public Outfit createOutfit(Long userId, String name, List<Long> clothingItemIds) {
+    public Outfit createOutfit(
+            Long userId,
+            String name,
+            List<OutfitItemRequest> items
+    ) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -45,26 +50,39 @@ public class OutfitService {
 
         outfit = outfitRepository.save(outfit);
 
-        if (clothingItemIds != null) {
-            for (Long clothingItemId : clothingItemIds) {
+        if (items != null) {
+            for (OutfitItemRequest itemRequest : items) {
 
-                ClothingItem clothingItem = clothingItemRepository.findById(clothingItemId)
+                Long clothingItemId = itemRequest.getClothingItemId();
+
+                ClothingItem clothingItem = clothingItemRepository
+                        .findById(clothingItemId)
                         .orElseThrow(() ->
                                 new RuntimeException(
-                                        "Clothing item not found: " + clothingItemId
+                                        "Clothing item not found: "
+                                                + clothingItemId
                                 )
                         );
 
                 // Make sure the clothing item belongs to this user
                 if (!clothingItem.getUser().getId().equals(userId)) {
                     throw new RuntimeException(
-                            "Clothing item does not belong to this user: " + clothingItemId
+                            "Clothing item does not belong to this user: "
+                                    + clothingItemId
                     );
                 }
 
                 OutfitItem outfitItem = new OutfitItem();
+
                 outfitItem.setOutfit(outfit);
                 outfitItem.setClothingItem(clothingItem);
+
+                // Default to layer 1 if none was provided
+                outfitItem.setLayerOrder(
+                        itemRequest.getLayerOrder() != null
+                                ? itemRequest.getLayerOrder()
+                                : 1
+                );
 
                 outfitItemRepository.save(outfitItem);
 
@@ -102,53 +120,92 @@ public class OutfitService {
             Long userId,
             Long outfitId,
             String name,
-            List<Long> clothingItemIds
+            List<OutfitItemRequest> items
     ) {
 
         Outfit outfit = outfitRepository.findById(outfitId)
                 .orElseThrow(() -> new RuntimeException("Outfit not found"));
 
         if (!outfit.getUser().getId().equals(userId)) {
-            throw new RuntimeException("Outfit does not belong to this user");
+            throw new RuntimeException(
+                    "Outfit does not belong to this user"
+            );
         }
 
+        // Update outfit name
         if (name != null && !name.isBlank()) {
             outfit.setName(name);
         }
 
-        if (clothingItemIds != null) {
+        if (items != null) {
 
-            // Remove duplicates from the request
-            java.util.Set<Long> selectedIds = new java.util.HashSet<>(clothingItemIds);
+            // Store requested clothing item IDs and their layer orders
+            java.util.Map<Long, Integer> requestedItems =
+                    new java.util.HashMap<>();
 
-            // Remove items that are no longer selected
+            for (OutfitItemRequest itemRequest : items) {
+
+                Long clothingItemId = itemRequest.getClothingItemId();
+
+                Integer layerOrder =
+                        itemRequest.getLayerOrder() != null
+                                ? itemRequest.getLayerOrder()
+                                : 1;
+
+                requestedItems.put(
+                        clothingItemId,
+                        layerOrder
+                );
+            }
+
+            // Remove clothing items that are no longer in the outfit
             outfit.getItems().removeIf(outfitItem ->
-                    !selectedIds.contains(
+                    !requestedItems.containsKey(
                             outfitItem.getClothingItem().getId()
                     )
             );
 
-            // IDs of items that are already part of the outfit
-            java.util.Set<Long> existingIds = outfit.getItems()
-                    .stream()
-                    .map(outfitItem -> outfitItem.getClothingItem().getId())
-                    .collect(java.util.stream.Collectors.toSet());
+            // Find the clothing items already in this outfit
+            java.util.Map<Long, OutfitItem> existingItems =
+                    new java.util.HashMap<>();
 
-            // Add only newly selected items
-            for (Long clothingItemId : selectedIds) {
+            for (OutfitItem outfitItem : outfit.getItems()) {
 
-                if (existingIds.contains(clothingItemId)) {
+                existingItems.put(
+                        outfitItem.getClothingItem().getId(),
+                        outfitItem
+                );
+            }
+
+            // Add new items or update existing layer orders
+            for (java.util.Map.Entry<Long, Integer> entry
+                    : requestedItems.entrySet()) {
+
+                Long clothingItemId = entry.getKey();
+                Integer layerOrder = entry.getValue();
+
+                // Item already exists in outfit
+                if (existingItems.containsKey(clothingItemId)) {
+
+                    OutfitItem existingOutfitItem =
+                            existingItems.get(clothingItemId);
+
+                    existingOutfitItem.setLayerOrder(layerOrder);
+
                     continue;
                 }
 
-                ClothingItem clothingItem = clothingItemRepository.findById(clothingItemId)
+                // Find clothing item
+                ClothingItem clothingItem = clothingItemRepository
+                        .findById(clothingItemId)
                         .orElseThrow(() ->
                                 new RuntimeException(
-                                        "Clothing item not found: " + clothingItemId
+                                        "Clothing item not found: "
+                                                + clothingItemId
                                 )
                         );
 
-                // Make sure the clothing item belongs to this user
+                // Make sure it belongs to the logged-in user
                 if (!clothingItem.getUser().getId().equals(userId)) {
                     throw new RuntimeException(
                             "Clothing item does not belong to this user: "
@@ -156,9 +213,12 @@ public class OutfitService {
                     );
                 }
 
+                // Create new outfit item
                 OutfitItem outfitItem = new OutfitItem();
+
                 outfitItem.setOutfit(outfit);
                 outfitItem.setClothingItem(clothingItem);
+                outfitItem.setLayerOrder(layerOrder);
 
                 outfit.getItems().add(outfitItem);
             }

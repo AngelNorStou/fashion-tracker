@@ -35,7 +35,8 @@ public class OutfitController {
         Outfit outfit = outfitService.createOutfit(
                 userId,
                 request.getName(),
-                request.getClothingItemIds()
+                //request.getClothingItemIds()
+                request.getItems()
         );
 
         return OutfitResponse.fromEntity(outfit);
@@ -83,7 +84,8 @@ public class OutfitController {
                 userId,
                 id,
                 request.getName(),
-                request.getClothingItemIds()
+                //request.getClothingItemIds()
+                request.getItems()
         );
 
         return OutfitResponse.fromEntity(outfit);

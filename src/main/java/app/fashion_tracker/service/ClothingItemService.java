@@ -281,4 +281,14 @@ public class ClothingItemService {
                 item.getUpdatedAt()
         );
     }
+
+    private Category getTopLevelCategory(Category category) {
+        Category current = category;
+
+        while (current.getParent() != null) {
+            current = current.getParent();
+        }
+
+        return current;
+    }
 }

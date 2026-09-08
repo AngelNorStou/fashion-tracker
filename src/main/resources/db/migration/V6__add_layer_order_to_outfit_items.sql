@@ -1,0 +1,2 @@
+ALTER TABLE outfit_items
+    ADD COLUMN layer_order INTEGER NOT NULL DEFAULT 1;
