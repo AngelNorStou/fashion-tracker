@@ -17,6 +17,7 @@ export default function OutfitLayerPreview({
   onRemove?: (id: number) => void;
 }) {
   const grouped = groupBySlot(entries);
+  const hasFull = grouped.full.length > 0;
 
   if (entries.length === 0) {
     return (
@@ -39,8 +40,12 @@ export default function OutfitLayerPreview({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-stretch gap-3">
-        <div className="flex flex-[1.3] flex-col gap-3">
+      <div className="flex items-stretch justify-center gap-3">
+        {/* Body column: either the dress/suit stack (Hat -> Shoes -> Full)
+            or the separates stack (Hat -> Top -> Belt -> Bottom -> Shoes).
+            Full Outfit only ever shows up here, centered, never as a
+            standalone side column. */}
+        <div className="flex w-full max-w-xs flex-col gap-3">
           <OutfitLayerSlot
             label="Hat"
             icon="👒"
@@ -53,76 +58,93 @@ export default function OutfitLayerPreview({
             onRemove={onRemove}
           />
 
-          <OutfitLayerSlot
-            label="Top"
-            icon="👕"
-            entries={grouped.top}
-            minHeightPx={150}
-            emptyText="No top"
-            readOnly={readOnly}
-            onMoveUp={onMoveUp}
-            onMoveDown={onMoveDown}
-            onRemove={onRemove}
-          />
+          {hasFull ? (
+            <>
+               <OutfitLayerSlot
+                 label="Full outfit / Dress / Suit"
+                 icon="👗"
+                 entries={grouped.full}
+                 minHeightPx={420}
+                 emptyText="No dress or suit"
+                 readOnly={readOnly}
+                 onMoveUp={onMoveUp}
+                 onMoveDown={onMoveDown}
+                 onRemove={onRemove}
+               />
 
-          <OutfitLayerSlot
-            label="Belt"
-            icon="➖"
-            entries={grouped.belt}
-            minHeightPx={32}
-            emptyText="No belt"
-            readOnly={readOnly}
-            onMoveUp={onMoveUp}
-            onMoveDown={onMoveDown}
-            onRemove={onRemove}
-          />
+               <OutfitLayerSlot
+                 label="Shoes"
+                 icon="👟"
+                 entries={grouped.shoes}
+                 minHeightPx={80}
+                 emptyText="No shoes"
+                 readOnly={readOnly}
+                 onMoveUp={onMoveUp}
+                 onMoveDown={onMoveDown}
+                 onRemove={onRemove}
+              />
+            </>
+          ) : (
+            <>
+              <OutfitLayerSlot
+                label="Top"
+                icon="👕"
+                entries={grouped.top}
+                minHeightPx={150}
+                emptyText="No top"
+                readOnly={readOnly}
+                onMoveUp={onMoveUp}
+                onMoveDown={onMoveDown}
+                onRemove={onRemove}
+              />
 
-          <OutfitLayerSlot
-            label="Bottom"
-            icon="👖"
-            entries={grouped.bottom}
-            minHeightPx={150}
-            emptyText="No bottom"
-            readOnly={readOnly}
-            onMoveUp={onMoveUp}
-            onMoveDown={onMoveDown}
-            onRemove={onRemove}
-          />
+              <OutfitLayerSlot
+                label="Belt"
+                icon="➖"
+                entries={grouped.belt}
+                minHeightPx={32}
+                emptyText="No belt"
+                readOnly={readOnly}
+                onMoveUp={onMoveUp}
+                onMoveDown={onMoveDown}
+                onRemove={onRemove}
+              />
 
-          <OutfitLayerSlot
-            label="Shoes"
-            icon="👟"
-            entries={grouped.shoes}
-            minHeightPx={80}
-            emptyText="No shoes"
-            readOnly={readOnly}
-            onMoveUp={onMoveUp}
-            onMoveDown={onMoveDown}
-            onRemove={onRemove}
-          />
+              <OutfitLayerSlot
+                label="Bottom"
+                icon="👖"
+                entries={grouped.bottom}
+                minHeightPx={150}
+                emptyText="No bottom"
+                readOnly={readOnly}
+                onMoveUp={onMoveUp}
+                onMoveDown={onMoveDown}
+                onRemove={onRemove}
+              />
+
+              <OutfitLayerSlot
+                label="Shoes"
+                icon="👟"
+                entries={grouped.shoes}
+                minHeightPx={80}
+                emptyText="No shoes"
+                readOnly={readOnly}
+                onMoveUp={onMoveUp}
+                onMoveDown={onMoveDown}
+                onRemove={onRemove}
+              />
+            </>
+          )}
         </div>
 
-        <div className="flex flex-[0.8] flex-col justify-center">
+        {/* Bags stay as their own side column in both layouts. */}
+        <div className="flex w-40 flex-shrink-0 flex-col justify-center">
           <OutfitLayerSlot
             label="Bags"
             icon="👜"
             entries={grouped.bag}
             minHeightPx={180}
             emptyText="No bag"
-            readOnly={readOnly}
-            onMoveUp={onMoveUp}
-            onMoveDown={onMoveDown}
-            onRemove={onRemove}
-          />
-        </div>
-
-        <div className="flex flex-[0.9] flex-col">
-          <OutfitLayerSlot
-            label="Full outfit / Dress / Suit"
-            icon="👗"
-            entries={grouped.full}
-            minHeightPx={520}
-            emptyText="No dress or suit"
             readOnly={readOnly}
             onMoveUp={onMoveUp}
             onMoveDown={onMoveDown}

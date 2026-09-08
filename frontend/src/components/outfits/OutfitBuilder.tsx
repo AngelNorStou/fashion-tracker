@@ -4,14 +4,21 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import OutfitLayerPreview from "./OutfitLayerPreview";
-import OutfitWardrobePicker from "./OutfitWardrobePicker";
+import OutfitItemsPanel from "./OutfitItemsPanel";
+import OutfitLayerOrderPanel from "./OutfitLayerOrderPanel";
+import OutfitZonePicker from "./OutfitZonePicker";
+
 import {
   Category,
   ClothingItem,
   Outfit,
   OutfitItem,
+  SlotKey,
+  ZONE_LABELS,
   buildCategoryZoneMap,
   buildLayerEntries,
+  groupBySlot,
+  sortEntriesByZoneThenLayer,
 } from "@/lib/outfitZones";
 
 export default function OutfitBuilder({
@@ -29,46 +36,61 @@ export default function OutfitBuilder({
   const [selectedItems, setSelectedItems] = useState<OutfitItem[]>(
     outfit?.items ?? []
   );
+  const [openPickerZone, setOpenPickerZone] = useState<SlotKey | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   const categoryZoneMap = buildCategoryZoneMap(categories);
 
-  function getSlot(clothingItemId: number) {
+  function getSlot(clothingItemId: number): SlotKey {
     const item = clothingItems.find((c) => c.id === clothingItemId);
-    if (!item) return "other" as const;
+    if (!item) return "other";
     return categoryZoneMap.get(item.categoryId) ?? "other";
   }
 
-  function toggleItem(itemId: number) {
-    setSelectedItems((current) => {
-      const existingItem = current.find(
-        (item) => item.clothingItemId === itemId
-      );
+    function toggleItem(itemId: number) {
+      setSelectedItems((current) => {
+        const existingItem = current.find(
+          (item) => item.clothingItemId === itemId
+        );
 
-      if (existingItem) {
-        return current.filter((item) => item.clothingItemId !== itemId);
-      }
+        if (existingItem) {
+          return current.filter((item) => item.clothingItemId !== itemId);
+        }
 
-      const targetSlot = getSlot(itemId);
+        const targetSlot = getSlot(itemId);
 
-      const sameSlotOrders = current
-        .filter((i) => getSlot(i.clothingItemId) === targetSlot)
-        .map((i) => i.layerOrder);
+        // Enforce dress/suit exclusivity: a full-body item can't coexist
+        // with a top, belt, or bottom, in either direction.
+        const hasFull = current.some(
+          (i) => getSlot(i.clothingItemId) === "full"
+        );
 
-      const nextLayer =
-        sameSlotOrders.length > 0 ? Math.max(...sameSlotOrders) + 1 : 1;
+        const bodyZones: SlotKey[] = ["top", "belt", "bottom"];
 
-      return [
-        ...current,
-        {
-          clothingItemId: itemId,
-          layerOrder: nextLayer,
-        },
-      ];
-    });
-  }
+        const hasBodyItem = current.some((i) =>
+          bodyZones.includes(getSlot(i.clothingItemId))
+        );
 
+        if (targetSlot === "full" && hasBodyItem) return current;
+        if (bodyZones.includes(targetSlot) && hasFull) return current;
+
+        const sameSlotOrders = current
+          .filter((i) => getSlot(i.clothingItemId) === targetSlot)
+          .map((i) => i.layerOrder);
+
+        const nextLayer =
+          sameSlotOrders.length > 0 ? Math.max(...sameSlotOrders) + 1 : 1;
+
+        return [
+          ...current,
+          {
+            clothingItemId: itemId,
+            layerOrder: nextLayer,
+          },
+        ];
+      });
+    }
   function moveItemUp(clothingItemId: number) {
     setSelectedItems((current) =>
       current.map((item) => {
@@ -160,7 +182,28 @@ export default function OutfitBuilder({
     categoryZoneMap
   );
 
+  const grouped = groupBySlot(layerEntries);
   const selectedIds = new Set(selectedItems.map((i) => i.clothingItemId));
+
+const disabledZones = new Set<SlotKey>();
+
+if (grouped.full.length > 0) {
+  disabledZones.add("top");
+  disabledZones.add("belt");
+  disabledZones.add("bottom");
+}
+
+if (
+  grouped.top.length > 0 ||
+  grouped.belt.length > 0 ||
+  grouped.bottom.length > 0
+) {
+  disabledZones.add("full");
+}
+
+  const pickerItems = openPickerZone
+    ? clothingItems.filter((item) => getSlot(item.id) === openPickerZone)
+    : [];
 
   return (
     <div className="rounded-2xl bg-[#FFFDF9] shadow-xl">
@@ -211,44 +254,32 @@ export default function OutfitBuilder({
               </span>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
+            <div className="grid gap-6 lg:grid-cols-[22%_53%_22%]">
+              <OutfitItemsPanel
+                grouped={grouped}
+                disabledZones={disabledZones}
+                onAddClick={(zone) => setOpenPickerZone(zone)}
+                onRemoveItem={toggleItem}
+              />
+
               <div className="rounded-2xl border border-[#D8CFC1] bg-[#F3EDE4] p-4">
-                <div className="mb-4">
-                  <h3 className="text-sm font-semibold text-[#2B2620]">
-                    Outfit preview
-                  </h3>
+                <h3 className="mb-1 text-sm font-semibold text-[#2B2620]">
+                  Outfit preview
+                </h3>
 
-                  <p className="mt-1 text-xs text-[#8A8172]">
-                    Organized by where each item is worn. Hover a layer to
-                    reorder or remove it.
-                  </p>
-                </div>
+                <p className="mb-4 text-xs text-[#8A8172]">
+                  How this outfit is laid out.
+                </p>
 
-                <OutfitLayerPreview
-                  entries={layerEntries}
-                  onMoveUp={moveItemUp}
-                  onMoveDown={moveItemDown}
-                  onRemove={toggleItem}
-                />
+                <OutfitLayerPreview entries={layerEntries} readOnly />
               </div>
 
-              <div className="rounded-2xl border border-[#D8CFC1] bg-[#FFFDF9] p-4">
-                <div className="mb-4">
-                  <h3 className="text-sm font-semibold text-[#2B2620]">
-                    Your wardrobe
-                  </h3>
-
-                  <p className="mt-1 text-xs text-[#8A8172]">
-                    Click an item to add or remove it from your outfit.
-                  </p>
-                </div>
-
-                <OutfitWardrobePicker
-                  clothingItems={clothingItems}
-                  selectedIds={selectedIds}
-                  onToggle={toggleItem}
-                />
-              </div>
+              <OutfitLayerOrderPanel
+                entries={sortEntriesByZoneThenLayer(layerEntries)}
+                onMoveUp={moveItemUp}
+                onMoveDown={moveItemDown}
+                onRemove={toggleItem}
+              />
             </div>
           </div>
         </div>
@@ -272,6 +303,16 @@ export default function OutfitBuilder({
           </button>
         </div>
       </form>
+
+      {openPickerZone && (
+        <OutfitZonePicker
+          zoneLabel={ZONE_LABELS[openPickerZone]}
+          items={pickerItems}
+          selectedIds={selectedIds}
+          onToggle={toggleItem}
+          onClose={() => setOpenPickerZone(null)}
+        />
+      )}
     </div>
   );
 }

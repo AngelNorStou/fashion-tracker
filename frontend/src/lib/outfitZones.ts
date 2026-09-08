@@ -47,6 +47,39 @@ export type LayerEntry = {
   slot: SlotKey;
 };
 
+export const ZONE_ORDER: SlotKey[] = [
+  "hat",
+  "top",
+  "belt",
+  "bottom",
+  "shoes",
+  "bag",
+  "full",
+  "other",
+];
+
+export const ZONE_LABELS: Record<SlotKey, string> = {
+  hat: "Hat",
+  top: "Top",
+  belt: "Belt",
+  bottom: "Bottom",
+  shoes: "Shoes",
+  bag: "Bags",
+  full: "Full Outfit / Dress / Suit",
+  other: "Accessories",
+};
+
+export const ZONE_ICONS: Record<SlotKey, string> = {
+  hat: "🧢",
+  top: "👕",
+  belt: "➖",
+  bottom: "👖",
+  shoes: "👟",
+  bag: "👜",
+  full: "👗",
+  other: "💍",
+};
+
 function slotForSlug(slug: string): SlotKey | null {
   switch (slug) {
     case "hats":
@@ -131,7 +164,9 @@ export function buildLayerEntries(
     .sort((a, b) => a.layerOrder - b.layerOrder);
 }
 
-export function groupBySlot(entries: LayerEntry[]) {
+export function groupBySlot(
+  entries: LayerEntry[]
+): Record<SlotKey, LayerEntry[]> {
   const bySlot = (slot: SlotKey) => entries.filter((e) => e.slot === slot);
 
   return {
@@ -144,4 +179,15 @@ export function groupBySlot(entries: LayerEntry[]) {
     full: bySlot("full"),
     other: bySlot("other"),
   };
+}
+
+
+export function sortEntriesByZoneThenLayer(
+  entries: LayerEntry[]
+): LayerEntry[] {
+  return [...entries].sort((a, b) => {
+    const zoneDiff = ZONE_ORDER.indexOf(a.slot) - ZONE_ORDER.indexOf(b.slot);
+    if (zoneDiff !== 0) return zoneDiff;
+    return a.layerOrder - b.layerOrder;
+  });
 }
