@@ -38,13 +38,12 @@ export default function OutfitItemsPanel({
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-1.5">
-                  <span
-                    className={`text-sm ${
-                      active ? "text-[#C1592F]" : "text-[#C9BFAF]"
-                    }`}
-                  >
-                    {ZONE_ICONS[zone]}
-                  </span>
+                <i
+                  className={`fi ${ZONE_ICONS[zone]} text-sm ${
+                    active ? "text-[#C1592F]" : "text-[#C9BFAF]"
+                  }`}
+                  aria-hidden="true"
+                ></i>
 
                   <span
                     className={`truncate text-sm ${

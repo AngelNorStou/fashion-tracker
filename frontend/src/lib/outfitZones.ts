@@ -70,14 +70,14 @@ export const ZONE_LABELS: Record<SlotKey, string> = {
 };
 
 export const ZONE_ICONS: Record<SlotKey, string> = {
-  hat: "🧢",
-  top: "👕",
-  belt: "➖",
-  bottom: "👖",
-  shoes: "👟",
-  bag: "👜",
-  full: "👗",
-  other: "💍",
+  hat: "fi-rr-hat-birthday",     // confirmed working
+  top: "fi-rr-shopping-bag",     // placeholder until you confirm a shirt icon
+  belt: "fi-rr-minus",           // thin line — visually reads as a belt
+  bottom: "fi-rr-shopping-bag",  // placeholder
+  shoes: "fi-rr-shoe-prints",    // confirmed working
+  bag: "fi-rr-backpack",         // confirmed to exist per the CSS dump; swap if you'd rather keep shopping-bag here and reassign top/bottom
+  full: "fi-rr-apps",            // grid/assemble icon as a stand-in for "full outfit"
+  other: "fi-rr-glasses",        // confirmed working
 };
 
 // Only Top supports true layering (t-shirt under a jacket, etc).

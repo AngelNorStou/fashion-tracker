@@ -38,9 +38,10 @@ export default function OutfitLayerSlot({
         className="flex flex-col items-center justify-center rounded-2xl bg-[#FFFDF9]"
         style={{ height: minHeightPx }}
       >
-        <span className="text-3xl text-[#E3DACB]" aria-hidden>
-          {ZONE_ICONS[zone]}
-        </span>
+        <i
+          className={`fi ${ZONE_ICONS[zone]} text-3xl text-[#E3DACB]`}
+          aria-hidden="true"
+        ></i>
         <span className="sr-only">No {zone} added</span>
       </div>
     );

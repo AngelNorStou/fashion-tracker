@@ -29,7 +29,7 @@ export default function OutfitLayerPreview({
   if (entries.length === 0) {
     return (
       <div className="flex min-h-[420px] flex-col items-center justify-center rounded-2xl bg-[#FFFDF9] p-4 text-center">
-        <div className="text-5xl">👕</div>
+        <i className="fi fi-rr-t-shirt text-5xl text-[#C9BFAF]" aria-hidden="true"></i>
 
         <h4 className="mt-4 text-sm font-medium text-[#5C5344]">
           {readOnly ? "This outfit is empty" : "Start building your outfit"}
