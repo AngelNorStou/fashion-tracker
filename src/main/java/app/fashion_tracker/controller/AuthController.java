@@ -10,6 +10,9 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -41,6 +44,18 @@ public class AuthController {
         String token = authService.login(request);
 
         return new LoginResponse(token);
+    }
+
+    @GetMapping("/verify-email")
+    public Map<String, String> verifyEmail(
+            @RequestParam String token
+    ) {
+        authService.verifyEmail(token);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Email verified successfully.");
+
+        return response;
     }
 
     @PostMapping("/logout")

@@ -66,4 +66,40 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .body(response);
     }
+
+    @ExceptionHandler(EmailNotVerifiedException.class)
+    public ResponseEntity<Map<String, String>> handleEmailNotVerified(
+            EmailNotVerifiedException exception
+    ) {
+        Map<String, String> response = new HashMap<>();
+        response.put("error", exception.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(response);
+    }
+
+    @ExceptionHandler(InvalidOrExpiredTokenException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidToken(
+            InvalidOrExpiredTokenException exception
+    ) {
+        Map<String, String> response = new HashMap<>();
+        response.put("error", exception.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(response);
+    }
+
+    @ExceptionHandler(InvalidEmailDomainException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidEmailDomain(
+            InvalidEmailDomainException exception
+    ) {
+        Map<String, String> response = new HashMap<>();
+        response.put("error", exception.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(response);
+    }
 }

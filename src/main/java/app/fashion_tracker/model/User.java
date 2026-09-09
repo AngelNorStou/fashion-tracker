@@ -23,6 +23,14 @@ public class User {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
+    private boolean emailVerified = false;
+
+    @Column(unique = true)
+    private String emailVerificationToken;
+
+    private LocalDateTime emailVerificationExpiresAt;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -68,5 +76,27 @@ public class User {
         this.createdAt = createdAt;
     }
 
-    // Getters and setters
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    public String getEmailVerificationToken() {
+        return emailVerificationToken;
+    }
+
+    public void setEmailVerificationToken(String emailVerificationToken) {
+        this.emailVerificationToken = emailVerificationToken;
+    }
+
+    public LocalDateTime getEmailVerificationExpiresAt() {
+        return emailVerificationExpiresAt;
+    }
+
+    public void setEmailVerificationExpiresAt(LocalDateTime emailVerificationExpiresAt) {
+        this.emailVerificationExpiresAt = emailVerificationExpiresAt;
+    }
 }
