@@ -20,9 +20,13 @@ export async function apiFetch(
     headers.set("Content-Type", "application/json");
   }
 
-  if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
-  }
+    const isAuthEndpoint =
+      endpoint.startsWith("/api/auth/login") ||
+      endpoint.startsWith("/api/auth/register");
+
+    if (token && !isAuthEndpoint) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
 
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,

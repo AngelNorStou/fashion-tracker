@@ -29,13 +29,13 @@ export default function Navbar() {
     try {
       const data = await apiFetch("/api/users/me");
 
-      console.log("Current user:", data);
-
       setUser(data);
     } catch (error) {
-      console.error("Could not load current user:", error);
+      // Expected when the stored token has expired or is otherwise
+      // no longer valid — fall back to logged-out state quietly.
+      console.warn("Session expired or invalid, logging out locally.");
 
-      // Don't delete the JWT just because /me failed.
+      localStorage.removeItem("accessToken");
       setUser(null);
     } finally {
       setLoading(false);

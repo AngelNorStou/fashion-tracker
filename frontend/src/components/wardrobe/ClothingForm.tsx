@@ -46,6 +46,28 @@ type ClothingFormProps = {
   onCancel: () => void;
 };
 
+// Every value here must be a color CSS actually recognizes, since
+// items are rendered elsewhere as: backgroundColor: item.color.toLowerCase()
+const COLOR_SWATCHES = [
+  { label: "Black", value: "black" },
+  { label: "White", value: "white" },
+  { label: "Gray", value: "gray" },
+  { label: "Red", value: "red" },
+  { label: "Orange", value: "orange" },
+  { label: "Yellow", value: "yellow" },
+  { label: "Green", value: "green" },
+  { label: "Blue", value: "blue" },
+  { label: "Navy", value: "navy" },
+  { label: "Purple", value: "purple" },
+  { label: "Pink", value: "pink" },
+  { label: "Brown", value: "brown" },
+  { label: "Beige", value: "beige" },
+  { label: "Tan", value: "tan" },
+  { label: "Olive", value: "olive" },
+  { label: "Maroon", value: "maroon" },
+  { label: "Teal", value: "teal" },
+  { label: "Gold", value: "gold" },
+];
 
 export default function ClothingForm({
   item,
@@ -75,8 +97,22 @@ export default function ClothingForm({
     item?.tagIds ?? []
   );
 
+  // If the item's existing color doesn't match any swatch (e.g. it was
+  // typed in freely before this picker existed), keep showing it as a
+  // preview so editing doesn't silently discard it until a new swatch
+  // is explicitly chosen.
+  const matchesKnownSwatch = COLOR_SWATCHES.some(
+    (swatch) => swatch.value === color.toLowerCase()
+  );
+  const hasUnrecognizedExistingColor = color !== "" && !matchesKnownSwatch;
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!color) {
+      setError("Please choose a color.");
+      return;
+    }
 
     setError("");
     setLoading(true);
@@ -157,142 +193,169 @@ export default function ClothingForm({
             />
           </div>
 
-            {/* Color + Size */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
-                  Color
-                </label>
+          {/* Color */}
+          <div>
+            <label
+              htmlFor="color"
+              className="mb-1.5 block text-sm font-medium text-[#5C5344]"
+            >
+              Color
+            </label>
 
-                <input
-                  required
-                  value={color}
-                  onChange={(e) => setColor(e.target.value)}
-                  className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#C1592F]"
-                  placeholder="Blue"
-                />
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
-                  Size
-                </label>
-
-                <input
-                  required
-                  value={size}
-                  onChange={(e) => setSize(e.target.value)}
-                  className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#C1592F]"
-                  placeholder="M"
-                />
-              </div>
-            </div>
-
-            {/* Gender */}
-            <div>
-              <label
-                htmlFor="gender"
-                className="mb-1.5 block text-sm font-medium text-[#5C5344]"
-              >
-                Gender
-              </label>
+            <div className="flex items-center gap-3">
+              <span
+                className="h-9 w-9 flex-shrink-0 rounded-full border border-black/10"
+                style={{
+                  backgroundColor: color ? color.toLowerCase() : "transparent",
+                }}
+              />
 
               <select
-                id="gender"
-                value={gender}
-                onChange={(e) =>
-                  setGender(e.target.value as "MEN" | "WOMEN" | "UNISEX")
-                }
-                className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#2B2620] outline-none focus:border-[#C1592F]"
-              >
-                <option value="MEN">Men</option>
-                <option value="WOMEN">Women</option>
-                <option value="UNISEX">Unisex</option>
-              </select>
-            </div>
-            {/* Category */}
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
-                Category
-              </label>
-
-              <select
+                id="color"
                 required
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
+                value={matchesKnownSwatch ? color.toLowerCase() : ""}
+                onChange={(e) => setColor(e.target.value)}
                 className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#2B2620] outline-none focus:border-[#C1592F]"
               >
                 <option value="" disabled>
-                  Select a category
+                  Select a color
                 </option>
 
-                {categories
-                  .filter((category) => category.parentId === null)
-                  .map((parent) => {
-                    const children = categories.filter(
-                      (category) => category.parentId === parent.id
-                    );
-
-                    if (children.length === 0) {
-                      return (
-                        <option key={parent.id} value={parent.id}>
-                          {parent.name}
-                        </option>
-                      );
-                    }
-
-                    return (
-                      <optgroup key={parent.id} label={parent.name}>
-                        {children.map((child) => (
-                          <option key={child.id} value={child.id}>
-                            {child.name}
-                          </option>
-                        ))}
-                      </optgroup>
-                    );
-                  })}
+                {COLOR_SWATCHES.map((swatch) => (
+                  <option key={swatch.value} value={swatch.value}>
+                    {swatch.label}
+                  </option>
+                ))}
               </select>
             </div>
 
-          {/* Tags */}
-            <div>
-              <label className="mb-2 block text-sm font-medium text-[#5C5344]">
-                Tags
-              </label>
+            {hasUnrecognizedExistingColor && (
+              <p className="mt-2 text-xs text-[#8A8172]">
+                Current color: <span className="font-medium">{color}</span>{" "}
+                — pick an option above to change it.
+              </p>
+            )}
+          </div>
+          {/* Size */}
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
+              Size
+            </label>
 
-              {tags.length === 0 ? (
-                <p className="text-sm text-[#8A8172]">
-                  You don't have any tags yet.
-                </p>
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {tags.map((tag) => {
-                    const selected = selectedTagIds.includes(tag.id);
+            <input
+              required
+              value={size}
+              onChange={(e) => setSize(e.target.value)}
+              className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#C1592F]"
+              placeholder="M"
+            />
+          </div>
 
+          {/* Gender */}
+          <div>
+            <label
+              htmlFor="gender"
+              className="mb-1.5 block text-sm font-medium text-[#5C5344]"
+            >
+              Gender
+            </label>
+
+            <select
+              id="gender"
+              value={gender}
+              onChange={(e) =>
+                setGender(e.target.value as "MEN" | "WOMEN" | "UNISEX")
+              }
+              className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#2B2620] outline-none focus:border-[#C1592F]"
+            >
+              <option value="MEN">Men</option>
+              <option value="WOMEN">Women</option>
+              <option value="UNISEX">Unisex</option>
+            </select>
+          </div>
+          {/* Category */}
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
+              Category
+            </label>
+
+            <select
+              required
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#2B2620] outline-none focus:border-[#C1592F]"
+            >
+              <option value="" disabled>
+                Select a category
+              </option>
+
+              {categories
+                .filter((category) => category.parentId === null)
+                .map((parent) => {
+                  const children = categories.filter(
+                    (category) => category.parentId === parent.id
+                  );
+
+                  if (children.length === 0) {
                     return (
-                      <button
-                        key={tag.id}
-                        type="button"
-                        onClick={() => {
-                          setSelectedTagIds((current) =>
-                            selected
-                              ? current.filter((id) => id !== tag.id)
-                              : [...current, tag.id]
-                          );
-                        }}
-                        className={`rounded-full border px-3 py-1.5 text-sm transition ${
-                          selected
-                            ? "border-[#C1592F] bg-[#C1592F] text-white"
-                            : "border-[#D8CFC1] bg-white text-[#5C5344] hover:bg-[#F3EDE4]"
-                        }`}
-                      >
-                        {tag.name}
-                      </button>
+                      <option key={parent.id} value={parent.id}>
+                        {parent.name}
+                      </option>
                     );
-                  })}
-                </div>
-              )}
-            </div>
+                  }
+
+                  return (
+                    <optgroup key={parent.id} label={parent.name}>
+                      {children.map((child) => (
+                        <option key={child.id} value={child.id}>
+                          {child.name}
+                        </option>
+                      ))}
+                    </optgroup>
+                  );
+                })}
+            </select>
+          </div>
+
+          {/* Tags */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-[#5C5344]">
+              Tags
+            </label>
+
+            {tags.length === 0 ? (
+              <p className="text-sm text-[#8A8172]">
+                You don't have any tags yet.
+              </p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {tags.map((tag) => {
+                  const selected = selectedTagIds.includes(tag.id);
+
+                  return (
+                    <button
+                      key={tag.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedTagIds((current) =>
+                          selected
+                            ? current.filter((id) => id !== tag.id)
+                            : [...current, tag.id]
+                        );
+                      }}
+                      className={`rounded-full border px-3 py-1.5 text-sm transition ${
+                        selected
+                          ? "border-[#C1592F] bg-[#C1592F] text-white"
+                          : "border-[#D8CFC1] bg-white text-[#5C5344] hover:bg-[#F3EDE4]"
+                      }`}
+                    >
+                      {tag.name}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
           {/* Image */}
           <div>
             <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
