@@ -10,11 +10,15 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
+
+  const [step, setStep] = useState<"credentials" | "2fa">("credentials");
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleCredentialsSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setError("");
@@ -23,125 +27,203 @@ export default function LoginPage() {
     try {
       const data = await apiFetch("/api/auth/login", {
         method: "POST",
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+        body: JSON.stringify({ email, password }),
       });
 
-      console.log("Login response:", data);
+      if (data.twoFactorRequired) {
+        setStep("2fa");
+        return;
+      }
 
-      /*
-       * We will store the JWT returned by Spring Boot.
-       *
-       * This assumes the response contains:
-       *
-       * {
-       *   "token": "..."
-       * }
-       *
-       */
+      localStorage.setItem("accessToken", data.token);
+      window.dispatchEvent(new Event("auth-changed"));
+
+      router.push("/wardrobe");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to log in.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleCodeSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    setError("");
+    setLoading(true);
+
+    try {
+      const data = await apiFetch("/api/auth/verify-2fa", {
+        method: "POST",
+        body: JSON.stringify({ email, code }),
+      });
+
       localStorage.setItem("accessToken", data.token);
       window.dispatchEvent(new Event("auth-changed"));
 
       router.push("/wardrobe");
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "Unable to log in."
+        err instanceof Error ? err.message : "Unable to verify code."
       );
     } finally {
       setLoading(false);
     }
   }
 
+  async function handleResend() {
+    setError("");
+    setResending(true);
+
+    try {
+      await apiFetch("/api/auth/resend-2fa", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      });
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Unable to resend code."
+      );
+    } finally {
+      setResending(false);
+    }
+  }
+
   return (
     <main className="min-h-[calc(100vh-4rem)] bg-[#F7F3EC] px-6 py-16">
       <div className="mx-auto max-w-md">
-
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-semibold text-[#2B2620]">
-            Welcome back
+            {step === "credentials" ? "Welcome back" : "Enter your code"}
           </h1>
 
           <p className="mt-2 text-sm text-[#8A8172]">
-            Log in to access your wardrobe.
+            {step === "credentials"
+              ? "Log in to access your wardrobe."
+              : `We sent a 6-digit code to ${email}.`}
           </p>
         </div>
 
         <div className="rounded-xl border border-[#E3DACB] bg-[#FFFDF9] p-6">
-
           {error && (
             <div className="mb-5 rounded-lg border border-[#D9B8A8] bg-[#F3E2D5] px-4 py-3 text-sm text-[#9A4A25]">
               {error}
             </div>
           )}
 
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-5"
-          >
+          {step === "credentials" ? (
+            <form onSubmit={handleCredentialsSubmit} className="space-y-5">
+              <div>
+                <label
+                  htmlFor="email"
+                  className="mb-2 block text-sm font-medium text-[#5C5344]"
+                >
+                  Email
+                </label>
 
-            <div>
-              <label
-                htmlFor="email"
-                className="mb-2 block text-sm font-medium text-[#5C5344]"
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className="w-full rounded-lg border border-[#E3DACB] bg-[#FFFDF9] px-3 py-2.5 text-sm text-[#2B2620] outline-none placeholder:text-[#A69C8C] focus:border-[#C1592F]"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="password"
+                  className="mb-2 block text-sm font-medium text-[#5C5344]"
+                >
+                  Password
+                </label>
+
+                <input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full rounded-lg border border-[#E3DACB] bg-[#FFFDF9] px-3 py-2.5 text-sm text-[#2B2620] outline-none placeholder:text-[#A69C8C] focus:border-[#C1592F]"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-lg bg-[#C1592F] py-3 text-sm font-medium text-[#FFF7EE] transition hover:bg-[#9A4A25] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Email
-              </label>
+                {loading ? "Logging in..." : "Log in"}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleCodeSubmit} className="space-y-5">
+              <div>
+                <label
+                  htmlFor="code"
+                  className="mb-2 block text-sm font-medium text-[#5C5344]"
+                >
+                  6-digit code
+                </label>
 
-              <input
-                id="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="w-full rounded-lg border border-[#E3DACB] bg-[#FFFDF9] px-3 py-2.5 text-sm text-[#2B2620] outline-none placeholder:text-[#A69C8C] focus:border-[#C1592F]"
-              />
-            </div>
+                <input
+                  id="code"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  required
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  placeholder="123456"
+                  className="w-full rounded-lg border border-[#E3DACB] bg-[#FFFDF9] px-3 py-2.5 text-center text-lg tracking-[0.3em] text-[#2B2620] outline-none placeholder:text-[#A69C8C] focus:border-[#C1592F]"
+                />
+              </div>
 
-            <div>
-              <label
-                htmlFor="password"
-                className="mb-2 block text-sm font-medium text-[#5C5344]"
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-lg bg-[#C1592F] py-3 text-sm font-medium text-[#FFF7EE] transition hover:bg-[#9A4A25] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Password
-              </label>
+                {loading ? "Verifying..." : "Verify"}
+              </button>
 
-              <input
-                id="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full rounded-lg border border-[#E3DACB] bg-[#FFFDF9] px-3 py-2.5 text-sm text-[#2B2620] outline-none placeholder:text-[#A69C8C] focus:border-[#C1592F]"
-              />
-            </div>
+              <button
+                type="button"
+                onClick={handleResend}
+                disabled={resending}
+                className="w-full text-center text-sm text-[#8A8172] hover:text-[#C1592F] disabled:opacity-60"
+              >
+                {resending ? "Resending..." : "Resend code"}
+              </button>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-lg bg-[#C1592F] py-3 text-sm font-medium text-[#FFF7EE] transition hover:bg-[#9A4A25] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {loading ? "Logging in..." : "Log in"}
-            </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setStep("credentials");
+                  setCode("");
+                  setError("");
+                }}
+                className="w-full text-center text-xs text-[#A69C8C] hover:text-[#5C5344]"
+              >
+                ← Back to login
+              </button>
+            </form>
+          )}
 
-          </form>
-
-          <p className="mt-6 text-center text-sm text-[#8A8172]">
-            Don't have an account?{" "}
-
-            <Link
-              href="/register"
-              className="font-medium text-[#C1592F] hover:underline"
-            >
-              Register
-            </Link>
-          </p>
-
+          {step === "credentials" && (
+            <p className="mt-6 text-center text-sm text-[#8A8172]">
+              Don't have an account?{" "}
+              <Link
+                href="/register"
+                className="font-medium text-[#C1592F] hover:underline"
+              >
+                Register
+              </Link>
+            </p>
+          )}
         </div>
       </div>
     </main>

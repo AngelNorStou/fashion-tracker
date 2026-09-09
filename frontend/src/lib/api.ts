@@ -20,9 +20,13 @@ export async function apiFetch(
     headers.set("Content-Type", "application/json");
   }
 
+    // Endpoints that don't need (and shouldn't send) an existing session
+    // token: all of /api/auth/* is unauthenticated by nature, and the
+    // email-change confirmation link may be clicked from a context where
+    // a stale/expired token is sitting in localStorage.
     const isAuthEndpoint =
-      endpoint.startsWith("/api/auth/login") ||
-      endpoint.startsWith("/api/auth/register");
+      endpoint.startsWith("/api/auth/") ||
+      endpoint.startsWith("/api/users/confirm-email-change");
 
     if (token && !isAuthEndpoint) {
       headers.set("Authorization", `Bearer ${token}`);

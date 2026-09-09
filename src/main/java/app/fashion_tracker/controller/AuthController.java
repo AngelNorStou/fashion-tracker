@@ -3,7 +3,9 @@ package app.fashion_tracker.controller;
 import app.fashion_tracker.dto.LoginRequest;
 import app.fashion_tracker.dto.LoginResponse;
 import app.fashion_tracker.dto.RegisterRequest;
+import app.fashion_tracker.dto.ResendTwoFactorRequest;
 import app.fashion_tracker.dto.UserResponse;
+import app.fashion_tracker.dto.VerifyTwoFactorRequest;
 import app.fashion_tracker.model.User;
 import app.fashion_tracker.service.AuthService;
 import jakarta.validation.Valid;
@@ -33,7 +35,9 @@ public class AuthController {
         return new UserResponse(
                 user.getId(),
                 user.getUsername(),
-                user.getEmail()
+                user.getEmail(),
+                user.isTwoFactorEnabled(),
+                user.getPendingEmail()
         );
     }
 
@@ -41,9 +45,26 @@ public class AuthController {
     public LoginResponse login(
             @Valid @RequestBody LoginRequest request
     ) {
-        String token = authService.login(request);
+        AuthService.LoginResult result = authService.login(request);
 
-        return new LoginResponse(token);
+        return new LoginResponse(result.token(), result.twoFactorRequired());
+    }
+
+    @PostMapping("/verify-2fa")
+    public LoginResponse verifyTwoFactor(
+            @Valid @RequestBody VerifyTwoFactorRequest request
+    ) {
+        String token = authService.verifyTwoFactorCode(request);
+
+        return new LoginResponse(token, false);
+    }
+
+    @PostMapping("/resend-2fa")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void resendTwoFactor(
+            @Valid @RequestBody ResendTwoFactorRequest request
+    ) {
+        authService.resendTwoFactorCode(request.email());
     }
 
     @GetMapping("/verify-email")

@@ -132,9 +132,12 @@ export default function Navbar() {
           {!loading && user && (
             <div className="flex items-center gap-4">
 
-              <span className="text-sm text-[#5C5344]">
+              <Link
+                href="/account"
+                className="text-sm text-[#5C5344] hover:text-[#C1592F]"
+              >
                 {user.username ?? user.email ?? "Profile"}
-              </span>
+              </Link>
 
               <button
                 onClick={handleLogout}

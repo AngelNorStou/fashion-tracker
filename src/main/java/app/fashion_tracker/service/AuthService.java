@@ -2,10 +2,12 @@ package app.fashion_tracker.service;
 
 import app.fashion_tracker.dto.LoginRequest;
 import app.fashion_tracker.dto.RegisterRequest;
+import app.fashion_tracker.dto.VerifyTwoFactorRequest;
 import app.fashion_tracker.exception.EmailNotVerifiedException;
 import app.fashion_tracker.exception.InvalidCredentialsException;
 import app.fashion_tracker.exception.InvalidEmailDomainException;
 import app.fashion_tracker.exception.InvalidOrExpiredTokenException;
+import app.fashion_tracker.exception.InvalidTwoFactorCodeException;
 import app.fashion_tracker.exception.ResourceConflictException;
 import app.fashion_tracker.model.User;
 import app.fashion_tracker.repository.UserRepository;
@@ -63,7 +65,7 @@ public class AuthService {
         user.setEmail(request.email());
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         user.setEmailVerified(false);
-        user.setEmailVerificationToken(generateToken());
+        user.setEmailVerificationToken(generateUrlSafeToken());
         user.setEmailVerificationExpiresAt(LocalDateTime.now().plusHours(24));
 
         User saved = userRepository.save(user);
@@ -95,7 +97,7 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public String login(LoginRequest request) {
+    public LoginResult login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() ->
@@ -112,12 +114,71 @@ public class AuthService {
             );
         }
 
+        if (user.isTwoFactorEnabled()) {
+            sendTwoFactorCodeToUser(user);
+            return new LoginResult(null, true);
+        }
+
+        return new LoginResult(jwtService.generateToken(user), false);
+    }
+
+    public String verifyTwoFactorCode(VerifyTwoFactorRequest request) {
+
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() ->
+                        new InvalidCredentialsException("Invalid email or password")
+                );
+
+        if (user.getTwoFactorCode() == null ||
+                !user.getTwoFactorCode().equals(request.code()) ||
+                user.getTwoFactorCodeExpiresAt() == null ||
+                user.getTwoFactorCodeExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new InvalidTwoFactorCodeException("Invalid or expired code");
+        }
+
+        user.setTwoFactorCode(null);
+        user.setTwoFactorCodeExpiresAt(null);
+        userRepository.save(user);
+
         return jwtService.generateToken(user);
     }
 
-    private String generateToken() {
+    public void resendTwoFactorCode(String email) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new InvalidCredentialsException("Invalid email or password")
+                );
+
+        if (!user.isTwoFactorEnabled()) {
+            throw new InvalidCredentialsException("Invalid email or password");
+        }
+
+        sendTwoFactorCodeToUser(user);
+    }
+
+    private void sendTwoFactorCodeToUser(User user) {
+        String code = generateSixDigitCode();
+
+        user.setTwoFactorCode(code);
+        user.setTwoFactorCodeExpiresAt(LocalDateTime.now().plusMinutes(10));
+
+        userRepository.save(user);
+
+        emailService.sendTwoFactorCode(user.getEmail(), code);
+    }
+
+    private String generateUrlSafeToken() {
         byte[] bytes = new byte[32];
         secureRandom.nextBytes(bytes);
         return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+    }
+
+    private String generateSixDigitCode() {
+        int code = secureRandom.nextInt(1_000_000);
+        return String.format("%06d", code);
+    }
+
+    public record LoginResult(String token, boolean twoFactorRequired) {
     }
 }

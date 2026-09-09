@@ -1,5 +1,8 @@
 package app.fashion_tracker.controller;
 
+import app.fashion_tracker.dto.ChangeEmailRequest;
+import app.fashion_tracker.dto.ChangePasswordRequest;
+import app.fashion_tracker.dto.TwoFactorToggleRequest;
 import app.fashion_tracker.dto.UpdateProfileRequest;
 import app.fashion_tracker.dto.UserResponse;
 import app.fashion_tracker.exception.UserNotFoundException;
@@ -11,9 +14,9 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -62,5 +65,52 @@ public class UserController {
         Long userId = Long.valueOf(authentication.getName());
 
         userService.deleteAccount(userId);
+    }
+
+    @PatchMapping("/me/2fa")
+    public UserResponse setTwoFactorEnabled(
+            Authentication authentication,
+            @RequestBody TwoFactorToggleRequest request
+    ) {
+        Long userId = Long.valueOf(authentication.getName());
+
+        User user = userService.setTwoFactorEnabled(userId, request.enabled());
+
+        return UserResponse.from(user);
+    }
+
+    @PatchMapping("/me/password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void changePassword(
+            Authentication authentication,
+            @Valid @RequestBody ChangePasswordRequest request
+    ) {
+        Long userId = Long.valueOf(authentication.getName());
+
+        userService.changePassword(userId, request);
+    }
+
+    @PostMapping("/me/email-change")
+    public UserResponse requestEmailChange(
+            Authentication authentication,
+            @Valid @RequestBody ChangeEmailRequest request
+    ) {
+        Long userId = Long.valueOf(authentication.getName());
+
+        User user = userService.requestEmailChange(userId, request);
+
+        return UserResponse.from(user);
+    }
+
+    @GetMapping("/confirm-email-change")
+    public Map<String, String> confirmEmailChange(
+            @RequestParam String token
+    ) {
+        userService.confirmEmailChange(token);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Email updated successfully.");
+
+        return response;
     }
 }

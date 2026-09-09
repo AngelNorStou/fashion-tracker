@@ -31,6 +31,20 @@ public class User {
 
     private LocalDateTime emailVerificationExpiresAt;
 
+    @Column(nullable = false)
+    private boolean twoFactorEnabled = false;
+
+    private String twoFactorCode;
+
+    private LocalDateTime twoFactorCodeExpiresAt;
+
+    private String pendingEmail;
+
+    @Column(unique = true)
+    private String emailChangeToken;
+
+    private LocalDateTime emailChangeExpiresAt;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -98,5 +112,53 @@ public class User {
 
     public void setEmailVerificationExpiresAt(LocalDateTime emailVerificationExpiresAt) {
         this.emailVerificationExpiresAt = emailVerificationExpiresAt;
+    }
+
+    public boolean isTwoFactorEnabled() {
+        return twoFactorEnabled;
+    }
+
+    public void setTwoFactorEnabled(boolean twoFactorEnabled) {
+        this.twoFactorEnabled = twoFactorEnabled;
+    }
+
+    public String getTwoFactorCode() {
+        return twoFactorCode;
+    }
+
+    public void setTwoFactorCode(String twoFactorCode) {
+        this.twoFactorCode = twoFactorCode;
+    }
+
+    public LocalDateTime getTwoFactorCodeExpiresAt() {
+        return twoFactorCodeExpiresAt;
+    }
+
+    public void setTwoFactorCodeExpiresAt(LocalDateTime twoFactorCodeExpiresAt) {
+        this.twoFactorCodeExpiresAt = twoFactorCodeExpiresAt;
+    }
+
+    public String getPendingEmail() {
+        return pendingEmail;
+    }
+
+    public void setPendingEmail(String pendingEmail) {
+        this.pendingEmail = pendingEmail;
+    }
+
+    public String getEmailChangeToken() {
+        return emailChangeToken;
+    }
+
+    public void setEmailChangeToken(String emailChangeToken) {
+        this.emailChangeToken = emailChangeToken;
+    }
+
+    public LocalDateTime getEmailChangeExpiresAt() {
+        return emailChangeExpiresAt;
+    }
+
+    public void setEmailChangeExpiresAt(LocalDateTime emailChangeExpiresAt) {
+        this.emailChangeExpiresAt = emailChangeExpiresAt;
     }
 }

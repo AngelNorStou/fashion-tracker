@@ -67,7 +67,10 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/register",
                                 "/api/auth/login",
-                                "/api/auth/verify-email"
+                                "/api/auth/verify-email",
+                                "/api/auth/verify-2fa",
+                                "/api/auth/resend-2fa",
+                                "/api/users/confirm-email-change"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
