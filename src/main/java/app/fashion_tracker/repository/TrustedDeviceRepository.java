@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface TrustedDeviceRepository extends JpaRepository<TrustedDevice, Long> {
 
     Optional<TrustedDevice> findByUserIdAndDeviceTokenHash(Long userId, String deviceTokenHash);
-
+    void deleteAllByUserId(Long userId);
 }

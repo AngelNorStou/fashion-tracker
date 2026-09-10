@@ -2,6 +2,7 @@ package app.fashion_tracker.service;
 
 import app.fashion_tracker.dto.LoginRequest;
 import app.fashion_tracker.dto.RegisterRequest;
+import app.fashion_tracker.dto.ResetPasswordRequest;
 import app.fashion_tracker.dto.VerifyTwoFactorRequest;
 import app.fashion_tracker.exception.EmailNotVerifiedException;
 import app.fashion_tracker.exception.InvalidCredentialsException;
@@ -266,5 +267,60 @@ public class AuthService {
     }
 
     public record LoginResult(String token, boolean twoFactorRequired, String deviceToken) {
+    }
+
+    public void requestPasswordReset(String email) {
+
+        if (!rateLimitService.isAllowed(
+                "forgot-password:" + email.toLowerCase(),
+                3,
+                Duration.ofMinutes(15)
+        )) {
+            throw new TooManyRequestsException(
+                    "Too many requests. Please try again later."
+            );
+        }
+
+        userRepository.findByEmail(email).ifPresent(user -> {
+            user.setPasswordResetToken(generateUrlSafeToken());
+            user.setPasswordResetExpiresAt(LocalDateTime.now().plusHours(1));
+
+            userRepository.save(user);
+
+            emailService.sendPasswordResetEmail(
+                    user.getEmail(), user.getPasswordResetToken()
+            );
+        });
+
+        // Deliberately no branching on whether the user was found -- the
+        // caller always gets the same generic response either way, so
+        // this endpoint can't be used to discover which emails are
+        // registered.
+    }
+
+    public void resetPassword(ResetPasswordRequest request) {
+
+        User user = userRepository.findByPasswordResetToken(request.token())
+                .orElseThrow(() ->
+                        new InvalidOrExpiredTokenException("Invalid or expired reset link")
+                );
+
+        if (user.getPasswordResetExpiresAt() == null ||
+                user.getPasswordResetExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new InvalidOrExpiredTokenException("Invalid or expired reset link");
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
+        user.setPasswordResetToken(null);
+        user.setPasswordResetExpiresAt(null);
+
+        userRepository.save(user);
+
+        // A password reset means we can no longer be sure this account
+        // wasn't compromised -- revoke every trusted device so 2FA is
+        // required again everywhere, closing off any device an attacker
+        // might have gotten trusted before the real owner regained
+        // control.
+        trustedDeviceRepository.deleteAllByUserId(user.getId());
     }
 }

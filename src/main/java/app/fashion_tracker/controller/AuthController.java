@@ -1,11 +1,6 @@
 package app.fashion_tracker.controller;
 
-import app.fashion_tracker.dto.LoginRequest;
-import app.fashion_tracker.dto.LoginResponse;
-import app.fashion_tracker.dto.RegisterRequest;
-import app.fashion_tracker.dto.ResendTwoFactorRequest;
-import app.fashion_tracker.dto.UserResponse;
-import app.fashion_tracker.dto.VerifyTwoFactorRequest;
+import app.fashion_tracker.dto.*;
 import app.fashion_tracker.model.User;
 import app.fashion_tracker.service.AuthService;
 import jakarta.validation.Valid;
@@ -86,5 +81,21 @@ public class AuthController {
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout() {
+    }
+
+    @PostMapping("/forgot-password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequest request
+    ) {
+        authService.requestPasswordReset(request.email());
+    }
+
+    @PostMapping("/reset-password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void resetPassword(
+            @Valid @RequestBody ResetPasswordRequest request
+    ) {
+        authService.resetPassword(request);
     }
 }

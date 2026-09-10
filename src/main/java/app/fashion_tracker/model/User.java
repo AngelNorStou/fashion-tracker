@@ -45,6 +45,11 @@ public class User {
 
     private LocalDateTime emailChangeExpiresAt;
 
+    @Column(unique = true)
+    private String passwordResetToken;
+
+    private LocalDateTime passwordResetExpiresAt;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -160,5 +165,21 @@ public class User {
 
     public void setEmailChangeExpiresAt(LocalDateTime emailChangeExpiresAt) {
         this.emailChangeExpiresAt = emailChangeExpiresAt;
+    }
+
+    public String getPasswordResetToken() {
+        return passwordResetToken;
+    }
+
+    public void setPasswordResetToken(String passwordResetToken) {
+        this.passwordResetToken = passwordResetToken;
+    }
+
+    public LocalDateTime getPasswordResetExpiresAt() {
+        return passwordResetExpiresAt;
+    }
+
+    public void setPasswordResetExpiresAt(LocalDateTime passwordResetExpiresAt) {
+        this.passwordResetExpiresAt = passwordResetExpiresAt;
     }
 }

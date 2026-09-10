@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import AuthGuard from "@/components/AuthGuard";
+import PasswordInput from "@/components/PasswordInput";
 
 type User = {
   id: number;
@@ -189,13 +190,13 @@ export default function AccountPage() {
                     <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
                       Current password
                     </label>
-                    <input
-                      type="password"
-                      required
+                    <PasswordInput
+                      id="email-change-password"
                       value={emailChangePassword}
-                      onChange={(e) => setEmailChangePassword(e.target.value)}
+                      onChange={setEmailChangePassword}
                       placeholder="••••••••"
-                      className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#C1592F]"
+                      required
+                      autoComplete="current-password"
                     />
                   </div>
 
@@ -232,13 +233,13 @@ export default function AccountPage() {
                     <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
                       Current password
                     </label>
-                    <input
-                      type="password"
-                      required
+                    <PasswordInput
+                      id="current-password"
                       value={currentPassword}
-                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      onChange={setCurrentPassword}
                       placeholder="••••••••"
-                      className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#C1592F]"
+                      required
+                      autoComplete="current-password"
                     />
                   </div>
 
@@ -246,14 +247,14 @@ export default function AccountPage() {
                     <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
                       New password
                     </label>
-                    <input
-                      type="password"
+                    <PasswordInput
+                      id="new-password"
+                      value={newPassword}
+                      onChange={setNewPassword}
+                      placeholder="••••••••"
                       required
                       minLength={8}
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      placeholder="••••••••"
-                      className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#C1592F]"
+                      autoComplete="new-password"
                     />
                   </div>
 

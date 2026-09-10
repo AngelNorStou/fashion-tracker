@@ -103,6 +103,8 @@ public class SecurityConfig {
                                 "/api/auth/verify-email",
                                 "/api/auth/verify-2fa",
                                 "/api/auth/resend-2fa",
+                                "/api/auth/forgot-password",
+                                "/api/auth/reset-password",
                                 "/api/users/confirm-email-change"
                         ).permitAll()
                         .anyRequest().authenticated()

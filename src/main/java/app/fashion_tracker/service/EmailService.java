@@ -122,4 +122,18 @@ public class EmailService {
             throw new RuntimeException("Failed to send email via EmailJS", e);
         }
     }
+
+    public void sendPasswordResetEmail(String toEmail, String token) {
+        String link = frontendUrl + "/reset-password?token=" + token;
+
+        send(
+                toEmail,
+                "Reset your Fashion Tracker password",
+                "We received a request to reset your Fashion Tracker password.\n\n" +
+                        "Click the link below to choose a new password:\n\n" +
+                        link + "\n\n" +
+                        "This link expires in 1 hour. If you didn't request this, " +
+                        "you can safely ignore this email — your password won't change."
+        );
+    }
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
+import PasswordInput from "@/components/PasswordInput";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -142,21 +143,29 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label
-                  htmlFor="password"
-                  className="mb-2 block text-sm font-medium text-[#5C5344]"
-                >
-                  Password
-                </label>
+                <div className="mb-2 flex items-center justify-between">
+                  <label
+                    htmlFor="password"
+                    className="text-sm font-medium text-[#5C5344]"
+                  >
+                    Password
+                  </label>
 
-                <input
+                  <Link
+                    href="/forgot-password"
+                    className="text-xs text-[#8A8172] hover:text-[#C1592F]"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+
+                <PasswordInput
                   id="password"
-                  type="password"
-                  required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={setPassword}
                   placeholder="••••••••"
-                  className="w-full rounded-lg border border-[#E3DACB] bg-[#FFFDF9] px-3 py-2.5 text-sm text-[#2B2620] outline-none placeholder:text-[#A69C8C] focus:border-[#C1592F]"
+                  required
+                  autoComplete="current-password"
                 />
               </div>
 
