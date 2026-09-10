@@ -13,10 +13,13 @@ type ClothingItem = {
   brand: string;
   color: string;
   size: string;
+  gender: "MEN" | "WOMEN" | "UNISEX" | null;
   imagePath: string | null;
   categoryId: number;
   categoryName: string;
   tagIds: number[];
+  createdAt: string;
+  updatedAt: string;
 };
 
 type WardrobeGridProps = {
@@ -25,6 +28,7 @@ type WardrobeGridProps = {
   onEdit: (item: ClothingItem) => void;
   onDelete: (item: ClothingItem) => void;
 };
+
 export default function WardrobeGrid({
   items,
   tags,
@@ -47,15 +51,15 @@ export default function WardrobeGrid({
 
   return (
     <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {items.map((item) => (
-          <ClothingCard
-            key={item.id}
-            item={item}
-            tags={tags}
-            onEdit={onEdit}
-            onDelete={onDelete}
-          />
-        ))}
+      {items.map((item) => (
+        <ClothingCard
+          key={item.id}
+          item={item}
+          tags={tags}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
+      ))}
     </div>
   );
 }
