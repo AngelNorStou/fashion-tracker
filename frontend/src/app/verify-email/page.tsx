@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
@@ -13,7 +13,6 @@ export default function VerifyEmailPage() {
     "loading"
   );
   const [error, setError] = useState("");
-
   const hasVerified = useRef(false);
 
   useEffect(() => {
@@ -24,9 +23,6 @@ export default function VerifyEmailPage() {
         return;
       }
 
-      // Prevent a duplicate request from React Strict Mode's
-      // intentional double-invoke of effects in development, or from
-      // this effect re-running for any other reason.
       if (hasVerified.current) {
         return;
       }
@@ -84,5 +80,21 @@ export default function VerifyEmailPage() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-[calc(100vh-4rem)] bg-[#F7F3EC] px-6 py-16">
+          <div className="mx-auto max-w-md rounded-xl border border-[#E3DACB] bg-[#FFFDF9] p-6 text-center">
+            <p className="text-sm text-[#8A8172]">Loading...</p>
+          </div>
+        </main>
+      }
+    >
+      <VerifyEmailContent />
+    </Suspense>
   );
 }
