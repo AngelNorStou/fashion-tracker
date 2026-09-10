@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 
-export default function ConfirmEmailChangePage() {
+function ConfirmEmailChangeContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
@@ -80,5 +80,21 @@ export default function ConfirmEmailChangePage() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function ConfirmEmailChangePage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-[calc(100vh-4rem)] bg-[#F7F3EC] px-6 py-16">
+          <div className="mx-auto max-w-md rounded-xl border border-[#E3DACB] bg-[#FFFDF9] p-6 text-center">
+            <p className="text-sm text-[#8A8172]">Loading...</p>
+          </div>
+        </main>
+      }
+    >
+      <ConfirmEmailChangeContent />
+    </Suspense>
   );
 }
