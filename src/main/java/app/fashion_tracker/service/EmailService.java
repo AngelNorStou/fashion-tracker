@@ -81,7 +81,7 @@ public class EmailService {
         try {
             Map<String, Object> body = new HashMap<>();
             body.put("from", fromAddress);
-            body.put("to", toEmail);
+            body.put("to", toEmail.trim().toLowerCase());
             body.put("subject", subject);
             body.put("text", text);
 
