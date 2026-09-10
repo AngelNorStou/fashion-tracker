@@ -9,31 +9,41 @@ import app.fashion_tracker.exception.InvalidEmailDomainException;
 import app.fashion_tracker.exception.InvalidOrExpiredTokenException;
 import app.fashion_tracker.exception.InvalidTwoFactorCodeException;
 import app.fashion_tracker.exception.ResourceConflictException;
+import app.fashion_tracker.exception.TooManyRequestsException;
+import app.fashion_tracker.model.TrustedDevice;
 import app.fashion_tracker.model.User;
+import app.fashion_tracker.repository.TrustedDeviceRepository;
 import app.fashion_tracker.repository.UserRepository;
 import app.fashion_tracker.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import app.fashion_tracker.exception.TooManyRequestsException;
-import java.time.Duration;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.HexFormat;
 
 @Service
 public class AuthService {
 
+    private static final int DEVICE_TRUST_DAYS = 30;
+
     private final UserRepository userRepository;
+    private final TrustedDeviceRepository trustedDeviceRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final DomainValidationService domainValidationService;
     private final EmailService emailService;
-    private final SecureRandom secureRandom = new SecureRandom();
     private final RateLimitService rateLimitService;
+    private final SecureRandom secureRandom = new SecureRandom();
 
     public AuthService(
             UserRepository userRepository,
+            TrustedDeviceRepository trustedDeviceRepository,
             PasswordEncoder passwordEncoder,
             JwtService jwtService,
             DomainValidationService domainValidationService,
@@ -41,6 +51,7 @@ public class AuthService {
             RateLimitService rateLimitService
     ) {
         this.userRepository = userRepository;
+        this.trustedDeviceRepository = trustedDeviceRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.domainValidationService = domainValidationService;
@@ -102,42 +113,48 @@ public class AuthService {
         userRepository.save(user);
     }
 
-        public LoginResult login(LoginRequest request) {
+    public LoginResult login(LoginRequest request) {
 
-            if (!rateLimitService.isAllowed(
-                    "login:" + request.email().toLowerCase(),
-                    10,
-                    Duration.ofMinutes(15)
-            )) {
-                throw new TooManyRequestsException(
-                        "Too many login attempts. Please try again later."
-                );
-            }
-
-            User user = userRepository.findByEmail(request.email())
-                    .orElseThrow(() ->
-                            new InvalidCredentialsException("Invalid email or password")
-                    );
-
-            if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
-                throw new InvalidCredentialsException("Invalid email or password");
-            }
-
-            if (!user.isEmailVerified()) {
-                throw new EmailNotVerifiedException(
-                        "Please verify your email before logging in. Check your inbox for the verification link."
-                );
-            }
-
-            if (user.isTwoFactorEnabled()) {
-                sendTwoFactorCodeToUser(user);
-                return new LoginResult(null, true);
-            }
-
-            return new LoginResult(jwtService.generateToken(user), false);
+        if (!rateLimitService.isAllowed(
+                "login:" + request.email().toLowerCase(),
+                10,
+                Duration.ofMinutes(15)
+        )) {
+            throw new TooManyRequestsException(
+                    "Too many login attempts. Please try again later."
+            );
         }
 
-    public String verifyTwoFactorCode(VerifyTwoFactorRequest request) {
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() ->
+                        new InvalidCredentialsException("Invalid email or password")
+                );
+
+        if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+            throw new InvalidCredentialsException("Invalid email or password");
+        }
+
+        if (!user.isEmailVerified()) {
+            throw new EmailNotVerifiedException(
+                    "Please verify your email before logging in. Check your inbox for the verification link."
+            );
+        }
+
+        if (user.isTwoFactorEnabled()) {
+            if (request.deviceToken() != null && isTrustedDevice(user, request.deviceToken())) {
+                // Known device within its trust window: skip the 2FA
+                // email entirely and issue the session token directly.
+                return new LoginResult(jwtService.generateToken(user), false, null);
+            }
+
+            sendTwoFactorCodeToUser(user);
+            return new LoginResult(null, true, null);
+        }
+
+        return new LoginResult(jwtService.generateToken(user), false, null);
+    }
+
+    public LoginResult verifyTwoFactorCode(VerifyTwoFactorRequest request) {
 
         if (!rateLimitService.isAllowed(
                 "2fa:" + request.email().toLowerCase(),
@@ -165,11 +182,10 @@ public class AuthService {
         user.setTwoFactorCodeExpiresAt(null);
         userRepository.save(user);
 
-        return jwtService.generateToken(user);
+        String deviceToken = issueTrustedDevice(user);
+
+        return new LoginResult(jwtService.generateToken(user), false, deviceToken);
     }
-
-
-
 
     public void resendTwoFactorCode(String email) {
 
@@ -195,15 +211,36 @@ public class AuthService {
         sendTwoFactorCodeToUser(user);
     }
 
-    private String generateUrlSafeToken() {
-        byte[] bytes = new byte[32];
-        secureRandom.nextBytes(bytes);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+    private boolean isTrustedDevice(User user, String rawDeviceToken) {
+        String hash = hashToken(rawDeviceToken);
+
+        return trustedDeviceRepository
+                .findByUserIdAndDeviceTokenHash(user.getId(), hash)
+                .filter(device -> device.getExpiresAt().isAfter(LocalDateTime.now()))
+                .isPresent();
     }
 
-    private String generateSixDigitCode() {
-        int code = secureRandom.nextInt(1_000_000);
-        return String.format("%06d", code);
+    private String issueTrustedDevice(User user) {
+        String rawToken = generateUrlSafeToken();
+
+        TrustedDevice device = new TrustedDevice();
+        device.setUser(user);
+        device.setDeviceTokenHash(hashToken(rawToken));
+        device.setExpiresAt(LocalDateTime.now().plusDays(DEVICE_TRUST_DAYS));
+
+        trustedDeviceRepository.save(device);
+
+        return rawToken;
+    }
+
+    private String hashToken(String rawToken) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(rawToken.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 not available", e);
+        }
     }
 
     private void sendTwoFactorCodeToUser(User user) {
@@ -217,6 +254,17 @@ public class AuthService {
         emailService.sendTwoFactorCode(user.getEmail(), code);
     }
 
-    public record LoginResult(String token, boolean twoFactorRequired) {
+    private String generateUrlSafeToken() {
+        byte[] bytes = new byte[32];
+        secureRandom.nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+    }
+
+    private String generateSixDigitCode() {
+        int code = secureRandom.nextInt(1_000_000);
+        return String.format("%06d", code);
+    }
+
+    public record LoginResult(String token, boolean twoFactorRequired, String deviceToken) {
     }
 }

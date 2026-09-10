@@ -16,21 +16,27 @@ import java.util.Map;
 @Service
 public class EmailService {
 
-    private static final String RESEND_API_URL = "https://api.resend.com/emails";
+    private static final String EMAILJS_API_URL = "https://api.emailjs.com/api/v1.0/email/send";
 
-    private final String resendApiKey;
-    private final String fromAddress;
+    private final String serviceId;
+    private final String templateId;
+    private final String publicKey;
+    private final String privateKey;
     private final String frontendUrl;
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
     public EmailService(
-            @Value("${app.mail.resend-api-key}") String resendApiKey,
-            @Value("${app.mail.from}") String fromAddress,
+            @Value("${app.emailjs.service-id}") String serviceId,
+            @Value("${app.emailjs.template-id}") String templateId,
+            @Value("${app.emailjs.public-key}") String publicKey,
+            @Value("${app.emailjs.private-key}") String privateKey,
             @Value("${app.frontend-url}") String frontendUrl
     ) {
-        this.resendApiKey = resendApiKey;
-        this.fromAddress = fromAddress;
+        this.serviceId = serviceId;
+        this.templateId = templateId;
+        this.publicKey = publicKey;
+        this.privateKey = privateKey;
         this.frontendUrl = frontendUrl;
         this.objectMapper = new ObjectMapper();
 
@@ -77,20 +83,27 @@ public class EmailService {
         );
     }
 
-    private void send(String toEmail, String subject, String text) {
+    private void send(String toEmail, String subject, String message) {
         try {
+            Map<String, Object> templateParams = new HashMap<>();
+            templateParams.put("to_email", toEmail.trim().toLowerCase());
+            templateParams.put("subject", subject);
+            templateParams.put("message", message);
+
             Map<String, Object> body = new HashMap<>();
-            body.put("from", fromAddress);
-            body.put("to", toEmail.trim().toLowerCase());
-            body.put("subject", subject);
-            body.put("text", text);
+            body.put("service_id", serviceId);
+            body.put("template_id", templateId);
+            body.put("user_id", publicKey);
+            body.put("accessToken", privateKey);
+            body.put("template_params", templateParams);
 
             String jsonBody = objectMapper.writeValueAsString(body);
 
+            //System.out.println("EmailJS request body: " + jsonBody);
+
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(RESEND_API_URL))
+                    .uri(URI.create(EMAILJS_API_URL))
                     .timeout(Duration.ofSeconds(10))
-                    .header("Authorization", "Bearer " + resendApiKey)
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                     .build();
@@ -101,12 +114,12 @@ public class EmailService {
 
             if (response.statusCode() >= 400) {
                 throw new RuntimeException(
-                        "Resend API returned " + response.statusCode() + ": " + response.body()
+                        "EmailJS API returned " + response.statusCode() + ": " + response.body()
                 );
             }
         } catch (IOException | InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new RuntimeException("Failed to send email via Resend", e);
+            throw new RuntimeException("Failed to send email via EmailJS", e);
         }
     }
 }

@@ -25,9 +25,11 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      const deviceToken = localStorage.getItem("deviceToken");
+
       const data = await apiFetch("/api/auth/login", {
         method: "POST",
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, deviceToken }),
       });
 
       if (data.twoFactorRequired) {
@@ -59,6 +61,13 @@ export default function LoginPage() {
       });
 
       localStorage.setItem("accessToken", data.token);
+
+      // Remember this device so future logins on it can skip 2FA
+      // until the trust window expires.
+      if (data.deviceToken) {
+        localStorage.setItem("deviceToken", data.deviceToken);
+      }
+
       window.dispatchEvent(new Event("auth-changed"));
 
       router.push("/wardrobe");

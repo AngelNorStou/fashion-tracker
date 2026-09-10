@@ -47,16 +47,20 @@ public class AuthController {
     ) {
         AuthService.LoginResult result = authService.login(request);
 
-        return new LoginResponse(result.token(), result.twoFactorRequired());
+        return new LoginResponse(
+                result.token(), result.twoFactorRequired(), result.deviceToken()
+        );
     }
 
     @PostMapping("/verify-2fa")
     public LoginResponse verifyTwoFactor(
             @Valid @RequestBody VerifyTwoFactorRequest request
     ) {
-        String token = authService.verifyTwoFactorCode(request);
+        AuthService.LoginResult result = authService.verifyTwoFactorCode(request);
 
-        return new LoginResponse(token, false);
+        return new LoginResponse(
+                result.token(), result.twoFactorRequired(), result.deviceToken()
+        );
     }
 
     @PostMapping("/resend-2fa")
