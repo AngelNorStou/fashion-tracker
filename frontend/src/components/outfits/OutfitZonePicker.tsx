@@ -35,9 +35,9 @@ export default function OutfitZonePicker({
   }, [zoneLabel]);
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4 py-8">
-      <div className="max-h-[80vh] w-full max-w-2xl overflow-hidden rounded-2xl bg-[#FFFDF9] shadow-xl">
-        <div className="flex items-center justify-between border-b border-[#E3DACB] px-6 py-4">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-3 py-6 sm:px-4 sm:py-8">
+      <div className="max-h-[85vh] w-full max-w-2xl overflow-hidden rounded-2xl bg-[#FFFDF9] shadow-xl">
+        <div className="flex items-center justify-between border-b border-[#E3DACB] px-4 py-4 sm:px-6">
           <h3 className="text-base font-semibold text-[#2B2620]">
             Add to {zoneLabel}
           </h3>
@@ -51,14 +51,14 @@ export default function OutfitZonePicker({
           </button>
         </div>
 
-        <div className="max-h-[60vh] overflow-y-auto p-6">
+        <div className="max-h-[65vh] overflow-y-auto p-4 sm:p-6">
           {items.length === 0 ? (
             <p className="text-center text-sm text-[#8A8172]">
               No wardrobe items in this category yet.
             </p>
           ) : (
             <>
-              <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                 {paginatedItems.map((item) => {
                   const selected = selectedIds.has(item.id);
                   const imageUrl = imageUrlFor(item);
@@ -115,7 +115,7 @@ export default function OutfitZonePicker({
           )}
         </div>
 
-        <div className="flex justify-end border-t border-[#E3DACB] px-6 py-4">
+        <div className="flex justify-end border-t border-[#E3DACB] px-4 py-4 sm:px-6">
           <button
             type="button"
             onClick={onClose}

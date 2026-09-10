@@ -302,7 +302,7 @@ export default function OutfitBuilder({
 
   return (
     <div className="rounded-2xl bg-[#FFFDF9] shadow-xl">
-      <div className="border-b border-[#E3DACB] px-6 py-5">
+      <div className="border-b border-[#E3DACB] px-4 py-5 sm:px-6">
         <h2 className="text-xl font-semibold text-[#2B2620]">
           {outfit ? "Edit outfit" : "Create outfit"}
         </h2>
@@ -313,7 +313,7 @@ export default function OutfitBuilder({
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div className="px-6 py-6">
+        <div className="px-4 py-6 sm:px-6">
           {error && (
             <div className="mb-6 rounded-xl border border-[#D9B8A8] bg-[#F3E2D5] px-5 py-4">
               <p className="text-sm text-[#9A4A25]">{error}</p>
@@ -349,7 +349,7 @@ export default function OutfitBuilder({
               </span>
             </div>
 
-            <div className="grid min-w-0 gap-6 lg:grid-cols-[22%_53%_22%]">
+            <div className="grid min-w-0 gap-6 md:grid-cols-2 lg:grid-cols-[22%_53%_22%]">
               <OutfitItemsPanel
                 grouped={grouped}
                 disabledZones={disabledZones}
@@ -357,7 +357,7 @@ export default function OutfitBuilder({
                 onRemoveItem={toggleItem}
               />
 
-              <div className="rounded-2xl border border-[#D8CFC1] bg-[#F3EDE4] p-4">
+              <div className="rounded-2xl border border-[#D8CFC1] bg-[#F3EDE4] p-4 md:col-start-2 md:row-start-1 md:row-span-2 lg:col-auto lg:row-auto">
                 <h3 className="mb-1 text-sm font-semibold text-[#2B2620]">
                   Outfit preview
                 </h3>
@@ -378,7 +378,7 @@ export default function OutfitBuilder({
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 border-t border-[#E3DACB] px-6 py-4">
+                <div className="flex justify-end gap-3 border-t border-[#E3DACB] px-4 py-4 sm:px-6">
           <button
             type="button"
             onClick={() => router.back()}

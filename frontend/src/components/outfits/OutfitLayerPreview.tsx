@@ -58,24 +58,26 @@ export default function OutfitLayerPreview({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-stretch justify-center gap-3">
-        <div className="flex w-full max-w-xs flex-col gap-2">
-          {chain.map((zone) => (
-            <OutfitLayerSlot
-              key={zone}
-              zone={zone}
-              entries={grouped[zone]}
-              minHeightPx={zoneHeights[zone]}
-              readOnly={readOnly}
-              onMoveUp={onMoveUp}
-              onMoveDown={onMoveDown}
-              onRemove={onRemove}
-            />
-          ))}
+      <div className="flex flex-wrap items-stretch justify-center gap-3">
+        <div className="w-full max-w-[280px] flex-shrink-0 flex-col gap-2 sm:max-w-xs md:w-auto">
+          <div className="flex flex-col gap-2">
+            {chain.map((zone) => (
+              <OutfitLayerSlot
+                key={zone}
+                zone={zone}
+                entries={grouped[zone]}
+                minHeightPx={zoneHeights[zone]}
+                readOnly={readOnly}
+                onMoveUp={onMoveUp}
+                onMoveDown={onMoveDown}
+                onRemove={onRemove}
+              />
+            ))}
+          </div>
         </div>
 
         {hasBag && (
-          <div className="flex w-32 flex-shrink-0 flex-col items-center">
+          <div className="flex w-24 flex-shrink-0 flex-col items-center sm:w-32">
             <OutfitLayerSlot
               zone="bag"
               entries={grouped.bag}
