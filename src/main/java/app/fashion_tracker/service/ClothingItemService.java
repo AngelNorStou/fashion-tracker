@@ -3,6 +3,7 @@ package app.fashion_tracker.service;
 import app.fashion_tracker.dto.ClothingItemResponse;
 import app.fashion_tracker.dto.CreateClothingItemRequest;
 import app.fashion_tracker.dto.UpdateClothingItemRequest;
+import app.fashion_tracker.exception.InvalidFileException;
 import app.fashion_tracker.model.Category;
 import app.fashion_tracker.model.ClothingItem;
 import app.fashion_tracker.model.Tag;
@@ -26,6 +27,8 @@ public class ClothingItemService {
     private final TagRepository tagRepository;
     private final UserRepository userRepository;
     private final SupabaseStorageService supabaseStorageService;
+
+    private static final long MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
 
     public ClothingItemService(
             ClothingItemRepository clothingItemRepository,
@@ -71,7 +74,9 @@ public class ClothingItemService {
         item.setGender(request.gender());
         item.setTags(tags);
 
-        if (file != null && !file.isEmpty()) {
+        if (file != null && !file.isEmpty())
+        {
+            validateImageFile(file);
 
             String extension = "";
 
@@ -184,7 +189,9 @@ public class ClothingItemService {
         }
 
         // Upload a new image if one was provided
-        if (file != null && !file.isEmpty()) {
+        if (file != null && !file.isEmpty())
+        {
+            validateImageFile(file);
 
             String extension = "";
 
@@ -290,5 +297,19 @@ public class ClothingItemService {
         }
 
         return current;
+    }
+
+
+
+    private void validateImageFile(MultipartFile file) {
+        String contentType = file.getContentType();
+
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new InvalidFileException("File must be an image.");
+        }
+
+        if (file.getSize() > MAX_FILE_SIZE_BYTES) {
+            throw new InvalidFileException("Image must be smaller than 5MB.");
+        }
     }
 }

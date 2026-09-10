@@ -14,6 +14,8 @@ import app.fashion_tracker.repository.UserRepository;
 import app.fashion_tracker.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import app.fashion_tracker.exception.TooManyRequestsException;
+import java.time.Duration;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -28,19 +30,22 @@ public class AuthService {
     private final DomainValidationService domainValidationService;
     private final EmailService emailService;
     private final SecureRandom secureRandom = new SecureRandom();
+    private final RateLimitService rateLimitService;
 
     public AuthService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
             JwtService jwtService,
             DomainValidationService domainValidationService,
-            EmailService emailService
+            EmailService emailService,
+            RateLimitService rateLimitService
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.domainValidationService = domainValidationService;
         this.emailService = emailService;
+        this.rateLimitService = rateLimitService;
     }
 
     public User register(RegisterRequest request) {
@@ -97,32 +102,52 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public LoginResult login(LoginRequest request) {
+        public LoginResult login(LoginRequest request) {
 
-        User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() ->
-                        new InvalidCredentialsException("Invalid email or password")
+            if (!rateLimitService.isAllowed(
+                    "login:" + request.email().toLowerCase(),
+                    10,
+                    Duration.ofMinutes(15)
+            )) {
+                throw new TooManyRequestsException(
+                        "Too many login attempts. Please try again later."
                 );
+            }
 
-        if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
-            throw new InvalidCredentialsException("Invalid email or password");
+            User user = userRepository.findByEmail(request.email())
+                    .orElseThrow(() ->
+                            new InvalidCredentialsException("Invalid email or password")
+                    );
+
+            if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+                throw new InvalidCredentialsException("Invalid email or password");
+            }
+
+            if (!user.isEmailVerified()) {
+                throw new EmailNotVerifiedException(
+                        "Please verify your email before logging in. Check your inbox for the verification link."
+                );
+            }
+
+            if (user.isTwoFactorEnabled()) {
+                sendTwoFactorCodeToUser(user);
+                return new LoginResult(null, true);
+            }
+
+            return new LoginResult(jwtService.generateToken(user), false);
         }
-
-        if (!user.isEmailVerified()) {
-            throw new EmailNotVerifiedException(
-                    "Please verify your email before logging in. Check your inbox for the verification link."
-            );
-        }
-
-        if (user.isTwoFactorEnabled()) {
-            sendTwoFactorCodeToUser(user);
-            return new LoginResult(null, true);
-        }
-
-        return new LoginResult(jwtService.generateToken(user), false);
-    }
 
     public String verifyTwoFactorCode(VerifyTwoFactorRequest request) {
+
+        if (!rateLimitService.isAllowed(
+                "2fa:" + request.email().toLowerCase(),
+                5,
+                Duration.ofMinutes(10)
+        )) {
+            throw new TooManyRequestsException(
+                    "Too many attempts. Please request a new code."
+            );
+        }
 
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() ->
@@ -143,7 +168,20 @@ public class AuthService {
         return jwtService.generateToken(user);
     }
 
+
+
+
     public void resendTwoFactorCode(String email) {
+
+        if (!rateLimitService.isAllowed(
+                "resend2fa:" + email.toLowerCase(),
+                3,
+                Duration.ofMinutes(15)
+        )) {
+            throw new TooManyRequestsException(
+                    "Too many resend attempts. Please wait before trying again."
+            );
+        }
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() ->
@@ -157,17 +195,6 @@ public class AuthService {
         sendTwoFactorCodeToUser(user);
     }
 
-    private void sendTwoFactorCodeToUser(User user) {
-        String code = generateSixDigitCode();
-
-        user.setTwoFactorCode(code);
-        user.setTwoFactorCodeExpiresAt(LocalDateTime.now().plusMinutes(10));
-
-        userRepository.save(user);
-
-        emailService.sendTwoFactorCode(user.getEmail(), code);
-    }
-
     private String generateUrlSafeToken() {
         byte[] bytes = new byte[32];
         secureRandom.nextBytes(bytes);
@@ -177,6 +204,17 @@ public class AuthService {
     private String generateSixDigitCode() {
         int code = secureRandom.nextInt(1_000_000);
         return String.format("%06d", code);
+    }
+
+    private void sendTwoFactorCodeToUser(User user) {
+        String code = generateSixDigitCode();
+
+        user.setTwoFactorCode(code);
+        user.setTwoFactorCodeExpiresAt(LocalDateTime.now().plusMinutes(10));
+
+        userRepository.save(user);
+
+        emailService.sendTwoFactorCode(user.getEmail(), code);
     }
 
     public record LoginResult(String token, boolean twoFactorRequired) {
