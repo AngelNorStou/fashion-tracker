@@ -6,12 +6,14 @@ type ClothingItem = {
   brand: string;
   color: string;
   size: string;
+  gender: "MEN" | "WOMEN" | "UNISEX" | null;
   imagePath: string | null;
   categoryId: number;
   categoryName: string;
   tagIds: number[];
+  createdAt: string;
+  updatedAt: string;
 };
-
 type ClothingCardProps = {
   item: ClothingItem;
   tags: Tag[];
