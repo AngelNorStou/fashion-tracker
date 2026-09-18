@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-import { safeGetItem, safeRemoveItem } from "@/lib/storage";
 
 type AuthGuardProps = {
   children: React.ReactNode;
@@ -17,11 +16,10 @@ export default function AuthGuard({ children }: AuthGuardProps) {
 
   useEffect(() => {
     async function checkAuthentication() {
-      const token = safeGetItem("accessToken");
+      const token = localStorage.getItem("accessToken");
 
       if (!token) {
         router.replace("/login");
-        setChecking(false);
         return;
       }
 
@@ -32,7 +30,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
       } catch (error) {
         console.error("Authentication check failed:", error);
 
-        safeRemoveItem("accessToken");
+        localStorage.removeItem("accessToken");
         router.replace("/login");
       } finally {
         setChecking(false);
