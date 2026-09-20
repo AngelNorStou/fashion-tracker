@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 
 type User = {
@@ -13,6 +13,7 @@ type User = {
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
 
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -75,49 +76,47 @@ export default function Navbar() {
     }
   }
 
+  function navLinkClass(href: string) {
+    const isActive = pathname === href;
+
+    return `text-sm transition ${
+      isActive
+        ? "text-[#2B2620] underline underline-offset-8 decoration-2"
+        : "text-[#5C5344] hover:text-[#C1592F]"
+    }`;
+  }
+
   return (
     <nav className="border-b border-[#E3DACB] bg-[#FFFDF9]">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-8">
 
         {/* Logo */}
-        <Link
-          href="/"
-          className="text-xl font-semibold text-[#2B2620]"
-        >
-          Fashion Tracker
+        <Link href="/" className="font-serif text-2xl font-semibold">
+          <span className="text-[#2B2620]">Fashion</span>
+          <span className="text-[#9B7EA8]">Tracker</span>
         </Link>
 
-        {/* Navigation */}
-        <div className="flex items-center gap-6">
-
-          <Link
-            href="/"
-            className="text-sm text-[#5C5344] hover:text-[#C1592F]"
-          >
+        {/* Center nav links */}
+        <div className="hidden items-center gap-8 md:flex">
+          <Link href="/" className={navLinkClass("/")}>
             Home
           </Link>
 
-          <Link
-            href="/wardrobe"
-            className="text-sm text-[#5C5344] hover:text-[#C1592F]"
-          >
+          <Link href="/wardrobe" className={navLinkClass("/wardrobe")}>
             Wardrobe
           </Link>
 
-          <Link
-            href="/outfits"
-            className="text-sm text-[#5C5344] hover:text-[#C1592F]"
-          >
+          <Link href="/outfits" className={navLinkClass("/outfits")}>
             Outfits
           </Link>
 
-            <Link
-              href="/generations"
-              className="text-sm text-[#5C5344] hover:text-[#C1592F]"
-            >
-              AI Generations
-            </Link>
+          <Link href="/generations" className={navLinkClass("/generations")}>
+            AI Generations
+          </Link>
+        </div>
 
+        {/* Right side: auth */}
+        <div className="flex items-center gap-4">
           {!loading && !user && (
             <>
               <Link
@@ -129,16 +128,16 @@ export default function Navbar() {
 
               <Link
                 href="/register"
-                className="rounded-lg bg-[#C1592F] px-4 py-2 text-sm font-medium text-white hover:bg-[#9A4A25]"
+                className="inline-flex items-center gap-2 rounded-full bg-[#2B2620] px-5 py-2.5 text-sm font-medium text-white transition hover:bg-[#1a1712]"
               >
                 Register
+                <span aria-hidden>→</span>
               </Link>
             </>
           )}
 
           {!loading && user && (
             <div className="flex items-center gap-4">
-
               <Link
                 href="/account"
                 className="text-sm text-[#5C5344] hover:text-[#C1592F]"
@@ -148,14 +147,12 @@ export default function Navbar() {
 
               <button
                 onClick={handleLogout}
-                className="rounded-lg border border-[#D8CFC1] px-4 py-2 text-sm font-medium text-[#5C5344] hover:bg-[#F3EDE4]"
+                className="rounded-full border border-[#D8CFC1] px-5 py-2.5 text-sm font-medium text-[#5C5344] hover:bg-[#F3EDE4]"
               >
                 Log out
               </button>
-
             </div>
           )}
-
         </div>
       </div>
     </nav>

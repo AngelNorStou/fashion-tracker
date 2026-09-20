@@ -1,6 +1,24 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import "./globals.css";
+import { Playfair_Display, DM_Sans, La_Belle_Aurore } from "next/font/google";
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  variable: "--font-playfair",
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-dm-sans",
+});
+
+const handwriting = La_Belle_Aurore({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-handwriting",
+});
 
 export const metadata: Metadata = {
   title: "Fashion Tracker",
@@ -13,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${playfair.variable} ${dmSans.variable} ${handwriting.variable}`}>
     <head>
     <link
             rel="stylesheet"
