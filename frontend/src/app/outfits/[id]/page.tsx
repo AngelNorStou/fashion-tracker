@@ -6,6 +6,7 @@ import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import AuthGuard from "@/components/AuthGuard";
 import OutfitLayerPreview from "@/components/outfits/OutfitLayerPreview";
+import OutfitGenerationPanel from "@/components/outfits/OutfitGenerationPanel";
 import {
   Category,
   ClothingItem,
@@ -114,41 +115,45 @@ export default function OutfitDetailPage() {
           )}
 
           {!loading && !error && outfit && (
-            <div className="mt-6 overflow-hidden rounded-2xl border border-[#D8CFC1] bg-[#FFFDF9]">
-              <div className="flex items-center justify-between border-b border-[#E3DACB] px-6 py-5">
-                <div>
-                  <h1 className="text-2xl font-semibold text-[#2B2620]">
-                    {outfit.name}
-                  </h1>
+            <div className="mt-6 space-y-6">
+              <div className="overflow-hidden rounded-2xl border border-[#D8CFC1] bg-[#FFFDF9]">
+                <div className="flex items-center justify-between border-b border-[#E3DACB] px-6 py-5">
+                  <div>
+                    <h1 className="text-2xl font-semibold text-[#2B2620]">
+                      {outfit.name}
+                    </h1>
 
-                  <p className="mt-1 text-sm text-[#8A8172]">
-                    {outfit.items.length}{" "}
-                    {outfit.items.length === 1 ? "item" : "items"}
-                  </p>
+                    <p className="mt-1 text-sm text-[#8A8172]">
+                      {outfit.items.length}{" "}
+                      {outfit.items.length === 1 ? "item" : "items"}
+                    </p>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Link
+                      href={`/outfits/${outfit.id}/edit`}
+                      className="rounded-lg border border-[#D8CFC1] px-4 py-2 text-sm text-[#5C5344] hover:bg-[#F3EDE4]"
+                    >
+                      Edit
+                    </Link>
+
+                    <button
+                      type="button"
+                      onClick={handleDelete}
+                      disabled={deleting}
+                      className="rounded-lg border border-[#D9B8A8] px-4 py-2 text-sm text-[#C1592F] hover:bg-[#F3E2D5] disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {deleting ? "Deleting..." : "Delete"}
+                    </button>
+                  </div>
                 </div>
 
-                <div className="flex gap-2">
-                  <Link
-                    href={`/outfits/${outfit.id}/edit`}
-                    className="rounded-lg border border-[#D8CFC1] px-4 py-2 text-sm text-[#5C5344] hover:bg-[#F3EDE4]"
-                  >
-                    Edit
-                  </Link>
-
-                  <button
-                    type="button"
-                    onClick={handleDelete}
-                    disabled={deleting}
-                    className="rounded-lg border border-[#D9B8A8] px-4 py-2 text-sm text-[#C1592F] hover:bg-[#F3E2D5] disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {deleting ? "Deleting..." : "Delete"}
-                  </button>
+                <div className="bg-[#F3EDE4] p-4">
+                  <OutfitLayerPreview entries={layerEntries} readOnly />
                 </div>
               </div>
 
-              <div className="bg-[#F3EDE4] p-4">
-                <OutfitLayerPreview entries={layerEntries} readOnly />
-              </div>
+              <OutfitGenerationPanel outfitId={outfit.id} />
             </div>
           )}
         </div>

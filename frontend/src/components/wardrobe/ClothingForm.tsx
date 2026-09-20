@@ -116,6 +116,11 @@ export default function ClothingForm({
       return;
     }
 
+    if (!item && !file) {
+        setError("Please add a photo of this item.");
+        return;
+      }
+
     setError("");
     setLoading(true);
 

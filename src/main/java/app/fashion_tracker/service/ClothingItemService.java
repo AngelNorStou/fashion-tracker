@@ -74,26 +74,29 @@ public class ClothingItemService {
         item.setGender(request.gender());
         item.setTags(tags);
 
-        if (file != null && !file.isEmpty())
-        {
-            validateImageFile(file);
-
-            String extension = "";
-
-            if (file.getOriginalFilename() != null &&
-                    file.getOriginalFilename().contains(".")) {
-
-                extension = file.getOriginalFilename()
-                        .substring(file.getOriginalFilename().lastIndexOf("."));
-            }
-
-            String filePath = userId + "/" + UUID.randomUUID() + extension;
-
-            String imagePath =
-                    supabaseStorageService.uploadImage(file, filePath);
-
-            item.setImagePath(imagePath);
+        if (file == null || file.isEmpty()) {
+            throw new InvalidFileException("A photo is required to add a clothing item.");
         }
+
+
+        validateImageFile(file);
+
+        String extension = "";
+
+        if (file.getOriginalFilename() != null &&
+                file.getOriginalFilename().contains(".")) {
+
+            extension = file.getOriginalFilename()
+                    .substring(file.getOriginalFilename().lastIndexOf("."));
+        }
+
+        String filePath = userId + "/" + UUID.randomUUID() + extension;
+
+        String imagePath =
+                supabaseStorageService.uploadImage(file, filePath);
+
+        item.setImagePath(imagePath);
+
 
         ClothingItem saved = clothingItemRepository.save(item);
 

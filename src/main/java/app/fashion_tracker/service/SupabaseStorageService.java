@@ -48,4 +48,43 @@ public class SupabaseStorageService {
 
         return filePath;
     }
+
+
+    private static final String GENERATED_IMAGES_BUCKET = "outfit-generations";
+
+    public String uploadGeneratedImage(byte[] imageBytes, String filePath) {
+
+        String url = supabaseUrl
+                + "/storage/v1/object/"
+                + GENERATED_IMAGES_BUCKET
+                + "/"
+                + filePath;
+
+        restClient.post()
+                .uri(url)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + serviceRoleKey)
+                .header("apikey", serviceRoleKey)
+                .contentType(MediaType.IMAGE_PNG)
+                .body(imageBytes)
+                .retrieve()
+                .toBodilessEntity();
+
+        return filePath;
+    }
+
+    public void deleteGeneratedImage(String filePath) {
+
+        String url = supabaseUrl
+                + "/storage/v1/object/"
+                + GENERATED_IMAGES_BUCKET
+                + "/"
+                + filePath;
+
+        restClient.delete()
+                .uri(url)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + serviceRoleKey)
+                .header("apikey", serviceRoleKey)
+                .retrieve()
+                .toBodilessEntity();
+    }
 }

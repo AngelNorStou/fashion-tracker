@@ -111,6 +111,13 @@ export default function Navbar() {
             Outfits
           </Link>
 
+            <Link
+              href="/generations"
+              className="text-sm text-[#5C5344] hover:text-[#C1592F]"
+            >
+              AI Generations
+            </Link>
+
           {!loading && !user && (
             <>
               <Link
