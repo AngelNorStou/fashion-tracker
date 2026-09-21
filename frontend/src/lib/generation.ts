@@ -3,6 +3,7 @@ export type MannequinGender = "MALE" | "FEMALE";
 export type OutfitGeneration = {
   id: number;
   outfitId: number;
+  outfitName: string;
   mannequinGender: MannequinGender;
   status: "PENDING" | "SUCCESS" | "FAILED";
   generatedImagePath: string | null;
