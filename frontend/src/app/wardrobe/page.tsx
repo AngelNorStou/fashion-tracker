@@ -307,15 +307,15 @@ export default function WardrobePage() {
           <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
 
             <div>
-              <p className="mb-2 text-sm font-medium uppercase tracking-wider text-[#C1592F]">
+              <p className="mb-2 text-sm font-medium uppercase tracking-wider text-[#7E6389]">
                 Your collection
               </p>
 
-              <h1 className="text-4xl font-semibold tracking-tight text-[#2B2620] sm:text-5xl">
+              <h1 className="text-4xl font-semibold tracking-tight text-[#17171C] sm:text-5xl">
                 Wardrobe
               </h1>
 
-              <p className="mt-3 max-w-xl text-base text-[#8A8172]">
+              <p className="mt-3 max-w-xl text-base text-[#6B6B73]">
                 Browse and manage everything in your digital wardrobe.
               </p>
             </div>
@@ -324,7 +324,7 @@ export default function WardrobePage() {
               <button
                 type="button"
                 onClick={() => setShowTagManager(true)}
-                className="rounded-xl border border-[#D8CFC1] bg-[#FFFDF9] px-5 py-3 text-sm font-medium text-[#5C5344] hover:bg-[#F3EDE4]"
+                className="rounded-xl border border-[#D8CFC1] bg-[#FFFDF9] px-5 py-3 text-sm font-medium text-[#4B4B52] hover:bg-[#F3EDE4]"
               >
                 Manage tags
               </button>
@@ -332,7 +332,7 @@ export default function WardrobePage() {
               <button
                 type="button"
                 onClick={() => setShowAddForm(true)}
-                className="rounded-xl bg-[#C1592F] px-5 py-3 text-sm font-medium text-white hover:bg-[#9A4A25]"
+                className="rounded-xl bg-[#22252E] px-5 py-3 text-sm font-medium text-white hover:bg-[#15171D]"
               >
                 + Add clothing
               </button>
@@ -360,7 +360,7 @@ export default function WardrobePage() {
           ========================== */}
           {loading && (
             <div className="mt-10 py-12 text-center">
-              <p className="text-sm text-[#8A8172]">
+              <p className="text-sm text-[#6B6B73]">
                 Loading your wardrobe...
               </p>
             </div>
@@ -383,7 +383,7 @@ export default function WardrobePage() {
         {!loading && !error && (
           <>
             <div className="mt-8 flex items-center justify-between">
-              <p className="text-sm text-[#8A8172]">
+              <p className="text-sm text-[#6B6B73]">
                 {filteredItems.length}{" "}
                 {filteredItems.length === 1 ? "item" : "items"}
               </p>

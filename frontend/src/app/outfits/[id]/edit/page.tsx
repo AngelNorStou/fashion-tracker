@@ -54,7 +54,7 @@ export default function EditOutfitPage() {
       <main className="min-h-screen bg-[#F7F3EC] px-6 py-10">
         <div className="mx-auto max-w-6xl">
           {loading && (
-            <p className="text-sm text-[#8A8172]">Loading outfit...</p>
+                        <p className="text-sm text-[#6B6B73]">Loading outfit...</p>
           )}
 
           {!loading && error && (

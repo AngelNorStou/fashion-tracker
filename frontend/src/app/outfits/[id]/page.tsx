@@ -99,13 +99,13 @@ export default function OutfitDetailPage() {
         <div className="mx-auto max-w-4xl">
           <Link
             href="/outfits"
-            className="text-sm text-[#8A8172] hover:text-[#C1592F]"
+            className="text-sm text-[#6B6B73] hover:text-[#9B7EA8]"
           >
             ← Back to outfits
           </Link>
 
           {loading && (
-            <p className="mt-6 text-sm text-[#8A8172]">Loading outfit...</p>
+            <p className="mt-6 text-sm text-[#6B6B73]">Loading outfit...</p>
           )}
 
           {!loading && error && (
@@ -119,11 +119,11 @@ export default function OutfitDetailPage() {
               <div className="overflow-hidden rounded-2xl border border-[#D8CFC1] bg-[#FFFDF9]">
                 <div className="flex items-center justify-between border-b border-[#E3DACB] px-6 py-5">
                   <div>
-                    <h1 className="text-2xl font-semibold text-[#2B2620]">
+                    <h1 className="text-2xl font-semibold text-[#17171C]">
                       {outfit.name}
                     </h1>
 
-                    <p className="mt-1 text-sm text-[#8A8172]">
+                    <p className="mt-1 text-sm text-[#6B6B73]">
                       {outfit.items.length}{" "}
                       {outfit.items.length === 1 ? "item" : "items"}
                     </p>
@@ -132,7 +132,7 @@ export default function OutfitDetailPage() {
                   <div className="flex gap-2">
                     <Link
                       href={`/outfits/${outfit.id}/edit`}
-                      className="rounded-lg border border-[#D8CFC1] px-4 py-2 text-sm text-[#5C5344] hover:bg-[#F3EDE4]"
+                      className="rounded-lg border border-[#D8CFC1] px-4 py-2 text-sm text-[#4B4B52] hover:bg-[#F3EDE4]"
                     >
                       Edit
                     </Link>
@@ -141,7 +141,7 @@ export default function OutfitDetailPage() {
                       type="button"
                       onClick={handleDelete}
                       disabled={deleting}
-                      className="rounded-lg border border-[#D9B8A8] px-4 py-2 text-sm text-[#C1592F] hover:bg-[#F3E2D5] disabled:cursor-not-allowed disabled:opacity-50"
+                      className="rounded-lg border border-[#D8CFC1] px-4 py-2 text-sm text-[#7E6389] hover:border-[#9B7EA8] hover:bg-[#F1EAF4] disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {deleting ? "Deleting..." : "Delete"}
                     </button>

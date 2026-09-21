@@ -103,11 +103,11 @@ export default function LoginPage() {
     <main className="min-h-[calc(100vh-4rem)] bg-[#F7F3EC] px-6 py-16">
       <div className="mx-auto max-w-md">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-semibold text-[#2B2620]">
+          <h1 className="text-3xl font-semibold text-[#17171C]">
             {step === "credentials" ? "Welcome back" : "Enter your code"}
           </h1>
 
-          <p className="mt-2 text-sm text-[#8A8172]">
+          <p className="mt-2 text-sm text-[#6B6B73]">
             {step === "credentials"
               ? "Log in to access your wardrobe."
               : `We sent a 6-digit code to ${email}.`}
@@ -126,7 +126,7 @@ export default function LoginPage() {
               <div>
                 <label
                   htmlFor="email"
-                  className="mb-2 block text-sm font-medium text-[#5C5344]"
+                  className="mb-2 block text-sm font-medium text-[#4B4B52]"
                 >
                   Email
                 </label>
@@ -138,7 +138,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full rounded-lg border border-[#E3DACB] bg-[#FFFDF9] px-3 py-2.5 text-sm text-[#2B2620] outline-none placeholder:text-[#A69C8C] focus:border-[#C1592F]"
+                  className="w-full rounded-lg border border-[#E3DACB] bg-[#FFFDF9] px-3 py-2.5 text-sm text-[#17171C] outline-none placeholder:text-[#A69C8C] focus:border-[#9B7EA8]"
                 />
               </div>
 
@@ -146,14 +146,14 @@ export default function LoginPage() {
                 <div className="mb-2 flex items-center justify-between">
                   <label
                     htmlFor="password"
-                    className="text-sm font-medium text-[#5C5344]"
+                    className="text-sm font-medium text-[#4B4B52]"
                   >
                     Password
                   </label>
 
                   <Link
                     href="/forgot-password"
-                    className="text-xs text-[#8A8172] hover:text-[#C1592F]"
+                    className="text-xs text-[#6B6B73] hover:text-[#9B7EA8]"
                   >
                     Forgot password?
                   </Link>
@@ -172,7 +172,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-lg bg-[#C1592F] py-3 text-sm font-medium text-[#FFF7EE] transition hover:bg-[#9A4A25] disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full rounded-lg bg-[#22252E] py-3 text-sm font-medium text-[#FFF7EE] transition hover:bg-[#15171D] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading ? "Logging in..." : "Log in"}
               </button>
@@ -182,7 +182,7 @@ export default function LoginPage() {
               <div>
                 <label
                   htmlFor="code"
-                  className="mb-2 block text-sm font-medium text-[#5C5344]"
+                  className="mb-2 block text-sm font-medium text-[#4B4B52]"
                 >
                   6-digit code
                 </label>
@@ -196,14 +196,14 @@ export default function LoginPage() {
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                   placeholder="123456"
-                  className="w-full rounded-lg border border-[#E3DACB] bg-[#FFFDF9] px-3 py-2.5 text-center text-lg tracking-[0.3em] text-[#2B2620] outline-none placeholder:text-[#A69C8C] focus:border-[#C1592F]"
+                  className="w-full rounded-lg border border-[#E3DACB] bg-[#FFFDF9] px-3 py-2.5 text-center text-lg tracking-[0.3em] text-[#17171C] outline-none placeholder:text-[#A69C8C] focus:border-[#9B7EA8]"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-lg bg-[#C1592F] py-3 text-sm font-medium text-[#FFF7EE] transition hover:bg-[#9A4A25] disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full rounded-lg bg-[#22252E] py-3 text-sm font-medium text-[#FFF7EE] transition hover:bg-[#15171D] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading ? "Verifying..." : "Verify"}
               </button>
@@ -212,7 +212,7 @@ export default function LoginPage() {
                 type="button"
                 onClick={handleResend}
                 disabled={resending}
-                className="w-full text-center text-sm text-[#8A8172] hover:text-[#C1592F] disabled:opacity-60"
+                className="w-full text-center text-sm text-[#6B6B73] hover:text-[#9B7EA8] disabled:opacity-60"
               >
                 {resending ? "Resending..." : "Resend code"}
               </button>
@@ -224,7 +224,7 @@ export default function LoginPage() {
                   setCode("");
                   setError("");
                 }}
-                className="w-full text-center text-xs text-[#A69C8C] hover:text-[#5C5344]"
+                className="w-full text-center text-xs text-[#A69C8C] hover:text-[#4B4B52]"
               >
                 ← Back to login
               </button>
@@ -232,11 +232,11 @@ export default function LoginPage() {
           )}
 
           {step === "credentials" && (
-            <p className="mt-6 text-center text-sm text-[#8A8172]">
+            <p className="mt-6 text-center text-sm text-[#6B6B73]">
               Don't have an account?{" "}
               <Link
                 href="/register"
-                className="font-medium text-[#C1592F] hover:underline"
+                className="font-medium text-[#7E6389] hover:underline"
               >
                 Register
               </Link>

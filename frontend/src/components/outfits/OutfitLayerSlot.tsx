@@ -68,7 +68,7 @@ export default function OutfitLayerSlot({
               transform: isHovered ? "translateY(-6px)" : undefined,
             }}
           >
-            <div className="absolute left-1.5 top-1.5 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-[#2B2620] text-xs font-semibold text-white">
+            <div className="absolute left-1.5 top-1.5 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-[#17171C] text-xs font-semibold text-white">
               {entry.layerOrder}
             </div>
 
@@ -81,7 +81,7 @@ export default function OutfitLayerSlot({
                 <button
                   type="button"
                   onClick={() => onMoveUp?.(entry.item.id)}
-                  className="flex h-6 w-6 items-center justify-center rounded-full bg-[#2B2620] text-xs text-white"
+                  className="flex h-6 w-6 items-center justify-center rounded-full bg-[#17171C] text-xs text-white"
                   title={`Move ${entry.item.name} up a layer`}
                 >
                   ↑
@@ -90,7 +90,7 @@ export default function OutfitLayerSlot({
                 <button
                   type="button"
                   onClick={() => onMoveDown?.(entry.item.id)}
-                  className="flex h-6 w-6 items-center justify-center rounded-full bg-[#2B2620] text-xs text-white"
+                  className="flex h-6 w-6 items-center justify-center rounded-full bg-[#17171C] text-xs text-white"
                   title={`Move ${entry.item.name} down a layer`}
                 >
                   ↓
@@ -99,7 +99,7 @@ export default function OutfitLayerSlot({
                 <button
                   type="button"
                   onClick={() => onRemove?.(entry.item.id)}
-                  className="flex h-6 w-6 items-center justify-center rounded-full bg-[#C1592F] text-xs text-white"
+                  className="flex h-6 w-6 items-center justify-center rounded-full bg-[#7E6389] text-xs text-white"
                   title={`Remove ${entry.item.name}`}
                 >
                   ×

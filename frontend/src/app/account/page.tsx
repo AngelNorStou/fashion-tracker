@@ -128,10 +128,10 @@ export default function AccountPage() {
     <AuthGuard>
       <main className="min-h-[calc(100vh-4rem)] bg-[#F7F3EC] px-6 py-12">
         <div className="mx-auto max-w-2xl space-y-6">
-          <h1 className="text-3xl font-semibold text-[#2B2620]">Account</h1>
+          <h1 className="text-3xl font-semibold text-[#17171C]">Account</h1>
 
           {loading && (
-            <p className="text-sm text-[#8A8172]">Loading...</p>
+            <p className="text-sm text-[#6B6B73]">Loading...</p>
           )}
 
           {!loading && error && (
@@ -144,17 +144,17 @@ export default function AccountPage() {
             <>
               {/* Email */}
               <div className="rounded-2xl border border-[#D8CFC1] bg-[#FFFDF9] p-6">
-                <h2 className="text-base font-semibold text-[#2B2620]">
+                <h2 className="text-base font-semibold text-[#17171C]">
                   Email address
                 </h2>
 
-                <p className="mt-1 text-sm text-[#8A8172]">
+                <p className="mt-1 text-sm text-[#6B6B73]">
                   Current: <span className="font-medium">{user.email}</span>
                 </p>
 
                 {user.pendingEmail && (
-                  <div className="mt-3 rounded-lg border border-[#D9B8A8] bg-[#F3E2D5] px-4 py-3">
-                    <p className="text-sm text-[#9A4A25]">
+                  <div className="mt-3 rounded-lg border border-[#D9CBE0] bg-[#F1EAF4] px-4 py-3">
+                    <p className="text-sm text-[#4B4B52]">
                       A confirmation link was sent to{" "}
                       <span className="font-medium">{user.pendingEmail}</span>.
                       Click it to finish updating your email.
@@ -173,7 +173,7 @@ export default function AccountPage() {
                   )}
 
                   <div>
-                    <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
+                    <label className="mb-1.5 block text-sm font-medium text-[#4B4B52]">
                       New email
                     </label>
                     <input
@@ -182,12 +182,12 @@ export default function AccountPage() {
                       value={newEmail}
                       onChange={(e) => setNewEmail(e.target.value)}
                       placeholder="new@example.com"
-                      className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#C1592F]"
+                      className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#17171C] outline-none placeholder:text-[#A69C8C] focus:border-[#9B7EA8]"
                     />
                   </div>
 
                   <div>
-                    <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
+                    <label className="mb-1.5 block text-sm font-medium text-[#4B4B52]">
                       Current password
                     </label>
                     <PasswordInput
@@ -203,7 +203,7 @@ export default function AccountPage() {
                   <button
                     type="submit"
                     disabled={emailSaving}
-                    className="rounded-lg bg-[#C1592F] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#9A4A25] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="rounded-lg bg-[#22252E] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#15171D] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {emailSaving ? "Sending..." : "Change email"}
                   </button>
@@ -212,7 +212,7 @@ export default function AccountPage() {
 
               {/* Password */}
               <div className="rounded-2xl border border-[#D8CFC1] bg-[#FFFDF9] p-6">
-                <h2 className="text-base font-semibold text-[#2B2620]">
+                <h2 className="text-base font-semibold text-[#17171C]">
                   Password
                 </h2>
 
@@ -230,7 +230,7 @@ export default function AccountPage() {
                   )}
 
                   <div>
-                    <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
+                    <label className="mb-1.5 block text-sm font-medium text-[#4B4B52]">
                       Current password
                     </label>
                     <PasswordInput
@@ -244,7 +244,7 @@ export default function AccountPage() {
                   </div>
 
                   <div>
-                    <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
+                    <label className="mb-1.5 block text-sm font-medium text-[#4B4B52]">
                       New password
                     </label>
                     <PasswordInput
@@ -261,7 +261,7 @@ export default function AccountPage() {
                   <button
                     type="submit"
                     disabled={passwordSaving}
-                    className="rounded-lg bg-[#C1592F] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#9A4A25] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="rounded-lg bg-[#22252E] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#15171D] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {passwordSaving ? "Saving..." : "Change password"}
                   </button>
@@ -270,16 +270,16 @@ export default function AccountPage() {
 
               {/* 2FA */}
               <div className="rounded-2xl border border-[#D8CFC1] bg-[#FFFDF9] p-6">
-                <h2 className="text-base font-semibold text-[#2B2620]">
+                <h2 className="text-base font-semibold text-[#17171C]">
                   Security
                 </h2>
 
                 <div className="mt-4 flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-[#2B2620]">
+                    <p className="text-sm font-medium text-[#17171C]">
                       Two-factor authentication
                     </p>
-                    <p className="mt-1 text-sm text-[#8A8172]">
+                    <p className="mt-1 text-sm text-[#6B6B73]">
                       {user.twoFactorEnabled
                         ? "Enabled — a code will be emailed to you at login."
                         : "Disabled — you'll log in with just your password."}
@@ -291,7 +291,7 @@ export default function AccountPage() {
                     onClick={handleToggle}
                     disabled={toggling}
                     className={`relative h-7 w-12 flex-shrink-0 rounded-full transition disabled:opacity-60 ${
-                      user.twoFactorEnabled ? "bg-[#C1592F]" : "bg-[#D8CFC1]"
+                      user.twoFactorEnabled ? "bg-[#22252E]" : "bg-[#D8CFC1]"
                     }`}
                   >
                     <span

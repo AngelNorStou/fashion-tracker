@@ -35,17 +35,17 @@ export default function OutfitZonePicker({
   }, [zoneLabel]);
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-3 py-6 sm:px-4 sm:py-8">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[#17171C]/40 px-3 py-6 sm:px-4 sm:py-8">
       <div className="max-h-[85vh] w-full max-w-2xl overflow-hidden rounded-2xl bg-[#FFFDF9] shadow-xl">
         <div className="flex items-center justify-between border-b border-[#E3DACB] px-4 py-4 sm:px-6">
-          <h3 className="text-base font-semibold text-[#2B2620]">
+          <h3 className="text-base font-semibold text-[#17171C]">
             Add to {zoneLabel}
           </h3>
 
           <button
             type="button"
             onClick={onClose}
-            className="text-xl leading-none text-[#8A8172] hover:text-[#2B2620]"
+            className="text-xl leading-none text-[#6B6B73] hover:text-[#17171C]"
           >
             ×
           </button>
@@ -53,7 +53,7 @@ export default function OutfitZonePicker({
 
         <div className="max-h-[65vh] overflow-y-auto p-4 sm:p-6">
           {items.length === 0 ? (
-            <p className="text-center text-sm text-[#8A8172]">
+            <p className="text-center text-sm text-[#6B6B73]">
               No wardrobe items in this category yet.
             </p>
           ) : (
@@ -70,7 +70,7 @@ export default function OutfitZonePicker({
                       onClick={() => onToggle(item.id)}
                       className={`relative overflow-hidden rounded-xl border-2 text-left transition ${
                         selected
-                          ? "border-[#C1592F] bg-[#F3E2D5]"
+                          ? "border-[#9B7EA8] bg-[#F1EAF4]"
                           : "border-[#E3DACB] bg-white hover:border-[#C9BFAF]"
                       }`}
                     >
@@ -90,14 +90,14 @@ export default function OutfitZonePicker({
                         )}
 
                         {selected && (
-                          <div className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-[#C1592F] text-xs font-bold text-white">
+                          <div className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-[#22252E] text-xs font-bold text-white">
                             ✓
                           </div>
                         )}
                       </div>
 
                       <div className="p-2">
-                        <p className="truncate text-xs font-medium text-[#2B2620]">
+                        <p className="truncate text-xs font-medium text-[#17171C]">
                           {item.name}
                         </p>
                       </div>
@@ -119,7 +119,7 @@ export default function OutfitZonePicker({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg bg-[#C1592F] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#9A4A25]"
+            className="rounded-lg bg-[#22252E] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#15171D]"
           >
             Done
           </button>

@@ -21,7 +21,7 @@ export default function OutfitItemsPanel({
 }) {
   return (
     <div className="rounded-2xl bg-[#FFFDF9] p-4">
-      <h3 className="mb-3 text-sm font-semibold text-[#2B2620]">
+      <h3 className="mb-3 text-sm font-semibold text-[#17171C]">
         Outfit items
       </h3>
 
@@ -38,18 +38,18 @@ export default function OutfitItemsPanel({
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-1.5">
-                <i
-                  className={`fi ${ZONE_ICONS[zone]} text-sm ${
-                    active ? "text-[#C1592F]" : "text-[#C9BFAF]"
-                  }`}
-                  aria-hidden="true"
-                ></i>
+                  <i
+                    className={`fi ${ZONE_ICONS[zone]} text-sm ${
+                      active ? "text-[#9B7EA8]" : "text-[#C9BFAF]"
+                    }`}
+                    aria-hidden="true"
+                  ></i>
 
                   <span
                     className={`truncate text-sm ${
                       active
-                        ? "font-medium text-[#C1592F]"
-                        : "text-[#8A8172]"
+                        ? "font-medium text-[#7E6389]"
+                        : "text-[#6B6B73]"
                     }`}
                   >
                     {ZONE_LABELS[zone]}
@@ -61,7 +61,7 @@ export default function OutfitItemsPanel({
                   <button
                     type="button"
                     onClick={() => onAddClick(zone)}
-                    className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-base leading-none text-[#8A8172] hover:bg-[#F3EDE4] hover:text-[#5C5344]"
+                    className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-base leading-none text-[#6B6B73] hover:bg-[#F3EDE4] hover:text-[#4B4B52]"
                     title={`Add ${ZONE_LABELS[zone]}`}
                   >
                     +
@@ -79,29 +79,29 @@ export default function OutfitItemsPanel({
 
               {active && (
                 <div className="mt-1.5 space-y-1">
-                    {entries
-                      .slice()
-                      .sort((a, b) => a.layerOrder - b.layerOrder)
-                      .map((entry) => (
-                        <div
-                          key={entry.item.id}
-                          className="flex items-center justify-between gap-2 pl-6"
-                        >
-                          <span className="truncate text-xs text-[#5C5344]">
-                            {entry.item.name}
-                          </span>
+                  {entries
+                    .slice()
+                    .sort((a, b) => a.layerOrder - b.layerOrder)
+                    .map((entry) => (
+                      <div
+                        key={entry.item.id}
+                        className="flex items-center justify-between gap-2 pl-6"
+                      >
+                        <span className="truncate text-xs text-[#4B4B52]">
+                          {entry.item.name}
+                        </span>
 
-                          <button
-                            type="button"
-                            onClick={() => onRemoveItem(entry.item.id)}
-                            className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border border-[#E8B8A4] bg-[#FBEEE6] text-xs font-medium leading-none text-[#C1592F] hover:border-[#C1592F] hover:bg-[#F3E2D5]"
-                            title={`Remove ${entry.item.name}`}
-                          >
-                            ×
-                          </button>
-                        </div>
-                      ))}
-                                    </div>
+                        <button
+                          type="button"
+                          onClick={() => onRemoveItem(entry.item.id)}
+                          className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border border-[#D9CBE0] bg-[#F1EAF4] text-xs font-medium leading-none text-[#7E6389] hover:border-[#9B7EA8] hover:bg-[#E8DDEE]"
+                          title={`Remove ${entry.item.name}`}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                </div>
               )}
             </div>
           );

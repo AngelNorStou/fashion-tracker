@@ -50,20 +50,20 @@ function ConfirmEmailChangeContent() {
     <main className="min-h-[calc(100vh-4rem)] bg-[#F7F3EC] px-6 py-16">
       <div className="mx-auto max-w-md rounded-xl border border-[#E3DACB] bg-[#FFFDF9] p-6 text-center">
         {status === "loading" && (
-          <p className="text-sm text-[#8A8172]">Confirming your new email...</p>
+          <p className="text-sm text-[#6B6B73]">Confirming your new email...</p>
         )}
 
         {status === "success" && (
           <>
-            <h1 className="text-xl font-semibold text-[#2B2620]">
+            <h1 className="text-xl font-semibold text-[#17171C]">
               Email updated
             </h1>
-            <p className="mt-2 text-sm text-[#8A8172]">
+            <p className="mt-2 text-sm text-[#6B6B73]">
               Your email address has been changed successfully.
             </p>
             <Link
               href="/account"
-              className="mt-6 inline-block rounded-lg bg-[#C1592F] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#9A4A25]"
+              className="mt-6 inline-block rounded-lg bg-[#22252E] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#15171D]"
             >
               Go to account
             </Link>
@@ -72,7 +72,7 @@ function ConfirmEmailChangeContent() {
 
         {status === "error" && (
           <>
-            <h1 className="text-xl font-semibold text-[#2B2620]">
+            <h1 className="text-xl font-semibold text-[#17171C]">
               Confirmation failed
             </h1>
             <p className="mt-2 text-sm text-[#9A4A25]">{error}</p>
@@ -80,21 +80,5 @@ function ConfirmEmailChangeContent() {
         )}
       </div>
     </main>
-  );
-}
-
-export default function ConfirmEmailChangePage() {
-  return (
-    <Suspense
-      fallback={
-        <main className="min-h-[calc(100vh-4rem)] bg-[#F7F3EC] px-6 py-16">
-          <div className="mx-auto max-w-md rounded-xl border border-[#E3DACB] bg-[#FFFDF9] p-6 text-center">
-            <p className="text-sm text-[#8A8172]">Loading...</p>
-          </div>
-        </main>
-      }
-    >
-      <ConfirmEmailChangeContent />
-    </Suspense>
   );
 }

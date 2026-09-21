@@ -31,12 +31,12 @@ export default function OutfitLayerPreview({
       <div className="flex min-h-[420px] flex-col items-center justify-center rounded-2xl bg-[#FFFDF9] p-4 text-center">
         <i className="fi fi-rr-t-shirt text-5xl text-[#C9BFAF]" aria-hidden="true"></i>
 
-        <h4 className="mt-4 text-sm font-medium text-[#5C5344]">
+        <h4 className="mt-4 text-sm font-medium text-[#4B4B52]">
           {readOnly ? "This outfit is empty" : "Start building your outfit"}
         </h4>
 
         {!readOnly && (
-          <p className="mt-2 max-w-xs text-xs text-[#8A8172]">
+          <p className="mt-2 max-w-xs text-xs text-[#6B6B73]">
             Select clothing items from your wardrobe to add them to this
             outfit.
           </p>
@@ -88,7 +88,7 @@ export default function OutfitLayerPreview({
               onRemove={onRemove}
             />
 
-            <span className="mt-1.5 text-[11px] text-[#8A8172]">Bag</span>
+            <span className="mt-1.5 text-[11px] text-[#6B6B73]">Bag</span>
           </div>
         )}
       </div>
@@ -100,7 +100,7 @@ export default function OutfitLayerPreview({
 
       {grouped.other.length > 0 && (
         <div>
-          <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#8A8172]">
+          <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#6B6B73]">
             Other accessories
           </span>
 
@@ -120,7 +120,7 @@ export default function OutfitLayerPreview({
                   )}
                 </div>
 
-                <span className="text-xs text-[#2B2620]">
+                <span className="text-xs text-[#17171C]">
                   {entry.item.name}
                 </span>
 
@@ -128,7 +128,7 @@ export default function OutfitLayerPreview({
                   <button
                     type="button"
                     onClick={() => onRemove?.(entry.item.id)}
-                    className="text-xs text-[#C1592F]"
+                    className="text-xs text-[#7E6389]"
                     title={`Remove ${entry.item.name}`}
                   >
                     ×

@@ -59,11 +59,11 @@ export default function OutfitGenerationPanel({
 
   return (
     <div className="rounded-2xl border border-[#D8CFC1] bg-[#FFFDF9] p-6">
-      <h3 className="text-base font-semibold text-[#2B2620]">
+      <h3 className="text-base font-semibold text-[#17171C]">
         AI outfit preview
       </h3>
 
-      <p className="mt-1 text-sm text-[#8A8172]">
+      <p className="mt-1 text-sm text-[#6B6B73]">
         Generate an image of this outfit being worn.
       </p>
 
@@ -75,8 +75,8 @@ export default function OutfitGenerationPanel({
             disabled={generating}
             className={`rounded-md px-3 py-1.5 text-sm transition ${
               gender === "FEMALE"
-                ? "bg-[#C1592F] text-white"
-                : "text-[#5C5344] hover:bg-[#F3EDE4]"
+                ? "bg-[#22252E] text-white"
+                : "text-[#4B4B52] hover:bg-[#F3EDE4]"
             }`}
           >
             Woman
@@ -88,8 +88,8 @@ export default function OutfitGenerationPanel({
             disabled={generating}
             className={`rounded-md px-3 py-1.5 text-sm transition ${
               gender === "MALE"
-                ? "bg-[#C1592F] text-white"
-                : "text-[#5C5344] hover:bg-[#F3EDE4]"
+                ? "bg-[#22252E] text-white"
+                : "text-[#4B4B52] hover:bg-[#F3EDE4]"
             }`}
           >
             Man
@@ -100,7 +100,7 @@ export default function OutfitGenerationPanel({
           type="button"
           onClick={handleGenerate}
           disabled={generating}
-          className="rounded-lg bg-[#C1592F] px-5 py-2 text-sm font-medium text-white hover:bg-[#9A4A25] disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-lg bg-[#22252E] px-5 py-2 text-sm font-medium text-white hover:bg-[#15171D] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {generating ? "Generating..." : "Generate"}
         </button>
@@ -108,7 +108,7 @@ export default function OutfitGenerationPanel({
 
       {generating && (
         <div className="mt-4 flex min-h-[200px] flex-col items-center justify-center rounded-xl border border-dashed border-[#C9BFAF] bg-[#F7F3EC] text-center">
-          <p className="text-sm text-[#8A8172]">
+          <p className="text-sm text-[#6B6B73]">
             Generating your outfit image...
           </p>
           <p className="mt-1 text-xs text-[#A69C8C]">

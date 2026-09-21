@@ -67,26 +67,26 @@ export default function OutfitCard({
 
       <div className="p-5">
         <Link href={`/outfits/${outfit.id}`}>
-          <h2 className="text-lg font-medium text-[#2B2620] hover:text-[#C1592F]">
+          <h2 className="text-lg font-medium text-[#17171C] hover:text-[#9B7EA8]">
             {outfit.name}
           </h2>
         </Link>
 
-        <p className="mt-1 text-sm text-[#8A8172]">
+        <p className="mt-1 text-sm text-[#6B6B73]">
           {outfit.items.length} {outfit.items.length === 1 ? "item" : "items"}
         </p>
 
         <div className="mt-5 flex gap-2">
           <Link
             href={`/outfits/${outfit.id}`}
-            className="flex-1 rounded-lg border border-[#D8CFC1] px-3 py-2 text-center text-sm text-[#5C5344] hover:bg-[#F3EDE4]"
+            className="flex-1 rounded-lg border border-[#D8CFC1] px-3 py-2 text-center text-sm text-[#4B4B52] hover:bg-[#F3EDE4]"
           >
             View
           </Link>
 
           <Link
             href={`/outfits/${outfit.id}/edit`}
-            className="flex-1 rounded-lg border border-[#D8CFC1] px-3 py-2 text-center text-sm text-[#5C5344] hover:bg-[#F3EDE4]"
+            className="flex-1 rounded-lg border border-[#D8CFC1] px-3 py-2 text-center text-sm text-[#4B4B52] hover:bg-[#F3EDE4]"
           >
             Edit
           </Link>
@@ -95,7 +95,7 @@ export default function OutfitCard({
             type="button"
             onClick={() => onDelete(outfit)}
             disabled={deleting}
-            className="flex-1 rounded-lg border border-[#D9B8A8] px-3 py-2 text-sm text-[#C1592F] hover:bg-[#F3E2D5] disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex-1 rounded-lg border border-[#D8CFC1] px-3 py-2 text-sm text-[#7E6389] hover:border-[#9B7EA8] hover:bg-[#F1EAF4] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {deleting ? "Deleting..." : "Delete"}
           </button>

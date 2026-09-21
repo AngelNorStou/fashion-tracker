@@ -147,16 +147,14 @@ export default function ClothingForm({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2B2620]/40 px-4">
-
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#17171C]/40 px-4">
       <div className="w-full max-w-lg rounded-2xl bg-[#FFFDF9] p-6 shadow-xl">
-
         <div className="mb-6">
-          <h2 className="text-xl font-semibold text-[#2B2620]">
+          <h2 className="text-xl font-semibold text-[#17171C]">
             {item ? "Edit clothing" : "Add clothing"}
           </h2>
 
-          <p className="mt-1 text-sm text-[#8A8172]">
+          <p className="mt-1 text-sm text-[#6B6B73]">
             {item
               ? "Update the information for this item."
               : "Add a new item to your wardrobe."}
@@ -170,10 +168,9 @@ export default function ClothingForm({
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-
           {/* Name */}
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
+            <label className="mb-1.5 block text-sm font-medium text-[#4B4B52]">
               Name
             </label>
 
@@ -181,21 +178,21 @@ export default function ClothingForm({
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#C1592F]"
+              className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#17171C] outline-none focus:border-[#9B7EA8]"
               placeholder="Blue T-Shirt"
             />
           </div>
 
           {/* Brand */}
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
+            <label className="mb-1.5 block text-sm font-medium text-[#4B4B52]">
               Brand
             </label>
 
             <input
               value={brand}
               onChange={(e) => setBrand(e.target.value)}
-              className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#C1592F]"
+              className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#17171C] outline-none focus:border-[#9B7EA8]"
               placeholder="Nike"
             />
           </div>
@@ -204,7 +201,7 @@ export default function ClothingForm({
           <div>
             <label
               htmlFor="color"
-              className="mb-1.5 block text-sm font-medium text-[#5C5344]"
+              className="mb-1.5 block text-sm font-medium text-[#4B4B52]"
             >
               Color
             </label>
@@ -222,7 +219,7 @@ export default function ClothingForm({
                 required
                 value={matchesKnownSwatch ? color.toLowerCase() : ""}
                 onChange={(e) => setColor(e.target.value)}
-                className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#2B2620] outline-none focus:border-[#C1592F]"
+                className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#17171C] outline-none focus:border-[#9B7EA8]"
               >
                 <option value="" disabled>
                   Select a color
@@ -237,15 +234,16 @@ export default function ClothingForm({
             </div>
 
             {hasUnrecognizedExistingColor && (
-              <p className="mt-2 text-xs text-[#8A8172]">
+              <p className="mt-2 text-xs text-[#6B6B73]">
                 Current color: <span className="font-medium">{color}</span>{" "}
                 — pick an option above to change it.
               </p>
             )}
           </div>
+
           {/* Size */}
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
+            <label className="mb-1.5 block text-sm font-medium text-[#4B4B52]">
               Size
             </label>
 
@@ -253,7 +251,7 @@ export default function ClothingForm({
               required
               value={size}
               onChange={(e) => setSize(e.target.value)}
-              className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#C1592F]"
+              className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#17171C] outline-none focus:border-[#9B7EA8]"
               placeholder="M"
             />
           </div>
@@ -262,7 +260,7 @@ export default function ClothingForm({
           <div>
             <label
               htmlFor="gender"
-              className="mb-1.5 block text-sm font-medium text-[#5C5344]"
+              className="mb-1.5 block text-sm font-medium text-[#4B4B52]"
             >
               Gender
             </label>
@@ -273,16 +271,17 @@ export default function ClothingForm({
               onChange={(e) =>
                 setGender(e.target.value as "MEN" | "WOMEN" | "UNISEX")
               }
-              className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#2B2620] outline-none focus:border-[#C1592F]"
+              className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#17171C] outline-none focus:border-[#9B7EA8]"
             >
               <option value="MEN">Men</option>
               <option value="WOMEN">Women</option>
               <option value="UNISEX">Unisex</option>
             </select>
           </div>
+
           {/* Category */}
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
+            <label className="mb-1.5 block text-sm font-medium text-[#4B4B52]">
               Category
             </label>
 
@@ -290,7 +289,7 @@ export default function ClothingForm({
               required
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
-              className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#2B2620] outline-none focus:border-[#C1592F]"
+              className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#17171C] outline-none focus:border-[#9B7EA8]"
             >
               <option value="" disabled>
                 Select a category
@@ -326,12 +325,12 @@ export default function ClothingForm({
 
           {/* Tags */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-[#5C5344]">
+            <label className="mb-2 block text-sm font-medium text-[#4B4B52]">
               Tags
             </label>
 
             {tags.length === 0 ? (
-              <p className="text-sm text-[#8A8172]">
+              <p className="text-sm text-[#6B6B73]">
                 You don't have any tags yet.
               </p>
             ) : (
@@ -352,8 +351,8 @@ export default function ClothingForm({
                       }}
                       className={`rounded-full border px-3 py-1.5 text-sm transition ${
                         selected
-                          ? "border-[#C1592F] bg-[#C1592F] text-white"
-                          : "border-[#D8CFC1] bg-white text-[#5C5344] hover:bg-[#F3EDE4]"
+                          ? "border-[#22252E] bg-[#22252E] text-white"
+                          : "border-[#D8CFC1] bg-white text-[#4B4B52] hover:bg-[#F3EDE4]"
                       }`}
                     >
                       {tag.name}
@@ -363,23 +362,22 @@ export default function ClothingForm({
               </div>
             )}
           </div>
+
           {/* Image */}
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-[#5C5344]">
+            <label className="mb-1.5 block text-sm font-medium text-[#4B4B52]">
               Image
             </label>
 
             <input
               type="file"
               accept="image/*"
-              onChange={(e) =>
-                setFile(e.target.files?.[0] ?? null)
-              }
-              className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#5C5344]"
+              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              className="w-full rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#4B4B52]"
             />
 
             {item?.imagePath && !file && (
-              <p className="mt-1.5 text-xs text-[#8A8172]">
+              <p className="mt-1.5 text-xs text-[#6B6B73]">
                 Existing image will be kept unless you select a new one.
               </p>
             )}
@@ -387,11 +385,10 @@ export default function ClothingForm({
 
           {/* Buttons */}
           <div className="flex justify-end gap-3 border-t border-[#EEE7DC] pt-5">
-
             <button
               type="button"
               onClick={onCancel}
-              className="rounded-lg border border-[#D8CFC1] px-4 py-2.5 text-sm font-medium text-[#5C5344] hover:bg-[#F3EDE4]"
+              className="rounded-lg border border-[#D8CFC1] px-4 py-2.5 text-sm font-medium text-[#4B4B52] hover:bg-[#F3EDE4]"
             >
               Cancel
             </button>
@@ -399,7 +396,7 @@ export default function ClothingForm({
             <button
               type="submit"
               disabled={loading}
-              className="rounded-lg bg-[#C1592F] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#9A4A25] disabled:opacity-60"
+              className="rounded-lg bg-[#22252E] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#15171D] disabled:opacity-60"
             >
               {loading
                 ? "Saving..."
@@ -407,9 +404,7 @@ export default function ClothingForm({
                   ? "Save changes"
                   : "Add clothing"}
             </button>
-
           </div>
-
         </form>
       </div>
     </div>

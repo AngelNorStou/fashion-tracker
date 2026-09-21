@@ -22,9 +22,9 @@ export default function OutfitLayerOrderPanel({
 
   return (
     <div className="rounded-2xl bg-[#FFFDF9] p-4">
-      <h3 className="text-sm font-semibold text-[#2B2620]">Layer order</h3>
+      <h3 className="text-sm font-semibold text-[#17171C]">Layer order</h3>
 
-      <p className="mt-1 text-xs text-[#8A8172]">
+      <p className="mt-1 text-xs text-[#6B6B73]">
         Reorder items within each zone.
       </p>
 
@@ -58,7 +58,7 @@ export default function OutfitLayerOrderPanel({
                       key={entry.item.id}
                       className="flex items-center justify-between gap-2"
                     >
-                      <span className="truncate text-sm text-[#2B2620]">
+                      <span className="truncate text-sm text-[#17171C]">
                         {idx + 1}. {entry.item.name}
                       </span>
 
@@ -67,7 +67,7 @@ export default function OutfitLayerOrderPanel({
                           <button
                             type="button"
                             onClick={() => onMoveUp(entry.item.id)}
-                            className="text-sm text-[#8A8172] hover:text-[#5C5344]"
+                            className="text-sm text-[#6B6B73] hover:text-[#4B4B52]"
                             title="Move up"
                           >
                             ↑
@@ -76,7 +76,7 @@ export default function OutfitLayerOrderPanel({
                           <button
                             type="button"
                             onClick={() => onMoveDown(entry.item.id)}
-                            className="text-sm text-[#8A8172] hover:text-[#5C5344]"
+                            className="text-sm text-[#6B6B73] hover:text-[#4B4B52]"
                             title="Move down"
                           >
                             ↓

@@ -37,10 +37,8 @@ export default function ClothingCard({
 
   return (
     <article className="group overflow-hidden rounded-2xl border border-[#E3DACB] bg-[#FFFDF9] shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-
       {/* Image */}
       <div className="relative aspect-[4/5] overflow-hidden bg-[#EEE8DE]">
-
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -49,38 +47,28 @@ export default function ClothingCard({
           />
         ) : (
           <div className="flex h-full items-center justify-center">
-            <span className="text-sm text-[#A69C8C]">
-              No image
-            </span>
+            <span className="text-sm text-[#A69C8C]">No image</span>
           </div>
         )}
 
-        <span className="absolute left-4 top-4 rounded-full bg-[#FFFDF9]/90 px-3 py-1 text-xs font-medium text-[#5C5344] backdrop-blur-sm">
+        <span className="absolute left-4 top-4 rounded-full bg-[#FFFDF9]/90 px-3 py-1 text-xs font-medium text-[#4B4B52] backdrop-blur-sm">
           {item.categoryName}
         </span>
-
       </div>
 
       {/* Information */}
       <div className="p-5">
-
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h3 className="font-medium text-[#2B2620]">
-              {item.name}
-            </h3>
+            <h3 className="font-medium text-[#17171C]">{item.name}</h3>
 
-            <p className="mt-1 text-sm text-[#8A8172]">
-              {item.brand}
-            </p>
+            <p className="mt-1 text-sm text-[#6B6B73]">{item.brand}</p>
           </div>
 
-          <span className="text-sm text-[#8A8172]">
-            {item.size}
-          </span>
+          <span className="text-sm text-[#6B6B73]">{item.size}</span>
         </div>
 
-        <div className="mt-4 flex items-center gap-2 text-sm text-[#5C5344]">
+        <div className="mt-4 flex items-center gap-2 text-sm text-[#4B4B52]">
           <span
             className="h-3 w-3 rounded-full border border-[#C9BFAF]"
             style={{
@@ -103,7 +91,7 @@ export default function ClothingCard({
               return (
                 <span
                   key={tag.id}
-                  className="rounded-full bg-[#F0E9DE] px-3 py-1 text-xs text-[#6B6255]"
+                  className="rounded-full bg-[#F0E9DE] px-3 py-1 text-xs text-[#4B4B52]"
                 >
                   {tag.name}
                 </span>
@@ -114,25 +102,22 @@ export default function ClothingCard({
 
         {/* Actions */}
         <div className="mt-5 flex gap-2 border-t border-[#EEE7DC] pt-4">
-
           <button
             type="button"
             onClick={() => onEdit(item)}
-            className="flex-1 rounded-lg border border-[#D8CFC1] px-3 py-2 text-sm font-medium text-[#5C5344] transition hover:bg-[#F3EDE4]"
+            className="flex-1 rounded-lg border border-[#D8CFC1] px-3 py-2 text-sm font-medium text-[#4B4B52] transition hover:bg-[#F3EDE4]"
           >
             Edit
           </button>
 
-          <button
-            type="button"
-            onClick={() => onDelete(item)}
-            className="flex-1 rounded-lg border border-[#D9B8A8] px-3 py-2 text-sm font-medium text-[#9A4A25] transition hover:bg-[#F3E2D5]"
-          >
-            Delete
-          </button>
-
+            <button
+              type="button"
+              onClick={() => onDelete(item)}
+              className="flex-1 rounded-lg border border-[#D8CFC1] px-3 py-2 text-sm font-medium text-[#7E6389] transition hover:border-[#9B7EA8] hover:bg-[#F1EAF4]"
+            >
+              Delete
+            </button>
         </div>
-
       </div>
     </article>
   );

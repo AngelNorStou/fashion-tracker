@@ -75,18 +75,18 @@ export default function OutfitsPage() {
         <div className="mx-auto max-w-7xl">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-semibold text-[#2B2620]">
+              <h1 className="text-3xl font-semibold text-[#17171C]">
                 Outfits
               </h1>
 
-              <p className="mt-1 text-sm text-[#8A8172]">
+              <p className="mt-1 text-sm text-[#6B6B73]">
                 Create and organize outfits from your wardrobe.
               </p>
             </div>
 
             <Link
               href="/outfits/new"
-              className="rounded-xl bg-[#C1592F] px-5 py-3 text-sm font-medium text-white hover:bg-[#9A4A25]"
+              className="rounded-xl bg-[#22252E] px-5 py-3 text-sm font-medium text-white hover:bg-[#15171D]"
             >
               + Create outfit
             </Link>
@@ -100,7 +100,7 @@ export default function OutfitsPage() {
 
           {loading && (
             <div className="mt-10 rounded-2xl border border-[#D8CFC1] bg-[#FFFDF9] px-6 py-16 text-center">
-              <p className="text-sm text-[#8A8172]">
+              <p className="text-sm text-[#6B6B73]">
                 Loading your outfits...
               </p>
             </div>
@@ -108,17 +108,17 @@ export default function OutfitsPage() {
 
           {!loading && outfits.length === 0 && (
             <div className="mt-10 rounded-2xl border border-dashed border-[#D8CFC1] bg-[#FFFDF9] px-6 py-16 text-center">
-              <h2 className="text-lg font-medium text-[#2B2620]">
+              <h2 className="text-lg font-medium text-[#17171C]">
                 No outfits yet
               </h2>
 
-              <p className="mt-2 text-sm text-[#8A8172]">
+              <p className="mt-2 text-sm text-[#6B6B73]">
                 Create your first outfit from the clothing in your wardrobe.
               </p>
 
               <Link
                 href="/outfits/new"
-                className="mt-6 inline-block rounded-xl bg-[#C1592F] px-5 py-3 text-sm font-medium text-white hover:bg-[#9A4A25]"
+                className="mt-6 inline-block rounded-xl bg-[#22252E] px-5 py-3 text-sm font-medium text-white hover:bg-[#15171D]"
               >
                 + Create your first outfit
               </Link>

@@ -72,11 +72,11 @@ function RecentOutfitCard({
       </div>
 
       <div className="p-4">
-        <p className="truncate text-sm font-medium text-[#2B2620]">
+        <p className="truncate text-sm font-medium text-[#17171C]">
           {outfit.name}
         </p>
 
-        <p className="mt-0.5 text-xs text-[#8A8172]">
+        <p className="mt-0.5 text-xs text-[#6B6B73]">
           {outfit.items.length}{" "}
           {outfit.items.length === 1 ? "item" : "items"}
         </p>
@@ -282,7 +282,6 @@ function LandingPage() {
         </div>
       </div>
 
-      {/* How it works — keep your existing block here, unchanged */}
     </main>
   );
 }
@@ -333,18 +332,18 @@ function DashboardPage({ user }: { user: User }) {
       <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
         {/* Header */}
         <div>
-          <p className="mb-2 text-sm font-medium uppercase tracking-wider text-[#C1592F]">
+          <p className="mb-2 text-sm font-medium uppercase tracking-wider text-[#7E6389]">
             Welcome back
           </p>
 
-          <h1 className="text-4xl font-semibold tracking-tight text-[#2B2620] sm:text-5xl">
+          <h1 className="text-4xl font-semibold tracking-tight text-[#17171C] sm:text-5xl">
             {user.username ?? "Your closet"}
           </h1>
         </div>
 
         {loading && (
           <div className="mt-10 py-12 text-center">
-            <p className="text-sm text-[#8A8172]">Loading your dashboard...</p>
+            <p className="text-sm text-[#6B6B73]">Loading your dashboard...</p>
           </div>
         )}
 
@@ -359,10 +358,10 @@ function DashboardPage({ user }: { user: User }) {
             {/* Quick stats + actions */}
             <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <div className="rounded-2xl border border-[#D8CFC1] bg-[#FFFDF9] p-5">
-                <p className="text-2xl font-semibold text-[#2B2620]">
+                <p className="text-2xl font-semibold text-[#17171C]">
                   {clothingItems.length}
                 </p>
-                <p className="mt-1 text-sm text-[#8A8172]">
+                <p className="mt-1 text-sm text-[#6B6B73]">
                   {clothingItems.length === 1
                     ? "Wardrobe item"
                     : "Wardrobe items"}
@@ -370,24 +369,24 @@ function DashboardPage({ user }: { user: User }) {
               </div>
 
               <div className="rounded-2xl border border-[#D8CFC1] bg-[#FFFDF9] p-5">
-                <p className="text-2xl font-semibold text-[#2B2620]">
+                <p className="text-2xl font-semibold text-[#17171C]">
                   {outfits.length}
                 </p>
-                <p className="mt-1 text-sm text-[#8A8172]">
+                <p className="mt-1 text-sm text-[#6B6B73]">
                   {outfits.length === 1 ? "Outfit" : "Outfits"}
                 </p>
               </div>
 
               <Link
                 href="/wardrobe"
-                className="flex items-center justify-center rounded-2xl bg-[#C1592F] p-5 text-center text-sm font-medium text-white hover:bg-[#9A4A25]"
+                className="flex items-center justify-center rounded-2xl bg-[#22252E] p-5 text-center text-sm font-medium text-white hover:bg-[#15171D]"
               >
                 + Add clothing
               </Link>
 
               <Link
                 href="/outfits/new"
-                className="flex items-center justify-center rounded-2xl border border-[#D8CFC1] bg-[#FFFDF9] p-5 text-center text-sm font-medium text-[#5C5344] hover:bg-[#F3EDE4]"
+                className="flex items-center justify-center rounded-2xl border border-[#D8CFC1] bg-[#FFFDF9] p-5 text-center text-sm font-medium text-[#4B4B52] hover:bg-[#F3EDE4]"
               >
                 + Create outfit
               </Link>
@@ -396,14 +395,14 @@ function DashboardPage({ user }: { user: User }) {
             {/* Recent outfits */}
             <div className="mt-12">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-medium text-[#2B2620]">
+                <h2 className="text-lg font-medium text-[#17171C]">
                   Recent outfits
                 </h2>
 
                 {outfits.length > 0 && (
                   <Link
                     href="/outfits"
-                    className="text-sm text-[#8A8172] hover:text-[#C1592F]"
+                    className="text-sm text-[#6B6B73] hover:text-[#9B7EA8]"
                   >
                     View all →
                   </Link>
@@ -412,11 +411,11 @@ function DashboardPage({ user }: { user: User }) {
 
               {outfits.length === 0 ? (
                 <div className="mt-4 rounded-2xl border border-dashed border-[#D8CFC1] bg-[#FFFDF9] px-6 py-16 text-center">
-                  <h3 className="text-base font-medium text-[#2B2620]">
+                  <h3 className="text-base font-medium text-[#17171C]">
                     No outfits yet
                   </h3>
 
-                  <p className="mt-2 text-sm text-[#8A8172]">
+                  <p className="mt-2 text-sm text-[#6B6B73]">
                     {clothingItems.length === 0
                       ? "Add a few pieces to your wardrobe first, then build your first outfit."
                       : "Build your first outfit from what's already in your wardrobe."}
@@ -426,7 +425,7 @@ function DashboardPage({ user }: { user: User }) {
                     href={
                       clothingItems.length === 0 ? "/wardrobe" : "/outfits/new"
                     }
-                    className="mt-6 inline-block rounded-xl bg-[#C1592F] px-5 py-3 text-sm font-medium text-white hover:bg-[#9A4A25]"
+                    className="mt-6 inline-block rounded-xl bg-[#22252E] px-5 py-3 text-sm font-medium text-white hover:bg-[#15171D]"
                   >
                     {clothingItems.length === 0
                       ? "+ Add clothing"
@@ -494,7 +493,7 @@ export default function Home() {
     return (
       <main className="min-h-[calc(100vh-4rem)] bg-[#F7F3EC]">
         <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
-          <p className="text-sm text-[#8A8172]">Loading...</p>
+           <p className="text-sm text-[#6B6B73]">Loading...</p>
         </div>
       </main>
     );

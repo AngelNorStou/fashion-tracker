@@ -303,11 +303,11 @@ export default function OutfitBuilder({
   return (
     <div className="rounded-2xl bg-[#FFFDF9] shadow-xl">
       <div className="border-b border-[#E3DACB] px-4 py-5 sm:px-6">
-        <h2 className="text-xl font-semibold text-[#2B2620]">
+        <h2 className="text-xl font-semibold text-[#17171C]">
           {outfit ? "Edit outfit" : "Create outfit"}
         </h2>
 
-        <p className="mt-1 text-sm text-[#8A8172]">
+        <p className="mt-1 text-sm text-[#6B6B73]">
           Choose the clothing items that belong in this outfit.
         </p>
       </div>
@@ -323,7 +323,7 @@ export default function OutfitBuilder({
           <div>
             <label
               htmlFor="outfit-name"
-              className="mb-1.5 block text-sm font-medium text-[#5C5344]"
+              className="mb-1.5 block text-sm font-medium text-[#4B4B52]"
             >
               Outfit name
             </label>
@@ -334,17 +334,17 @@ export default function OutfitBuilder({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Weekend casual"
-              className="w-full max-w-md rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#2B2620] outline-none focus:border-[#C1592F]"
+              className="w-full max-w-md rounded-lg border border-[#E3DACB] bg-white px-3 py-2.5 text-sm text-[#17171C] outline-none placeholder:text-[#A69C8C] focus:border-[#9B7EA8]"
             />
           </div>
 
           <div className="mt-6">
             <div className="mb-3 flex items-center justify-between">
-              <label className="block text-sm font-medium text-[#5C5344]">
+              <label className="block text-sm font-medium text-[#4B4B52]">
                 Build your outfit
               </label>
 
-              <span className="text-xs text-[#8A8172]">
+              <span className="text-xs text-[#6B6B73]">
                 {selectedItems.length} selected
               </span>
             </div>
@@ -358,11 +358,11 @@ export default function OutfitBuilder({
               />
 
               <div className="rounded-2xl border border-[#D8CFC1] bg-[#F3EDE4] p-4 md:col-start-2 md:row-start-1 md:row-span-2 lg:col-auto lg:row-auto">
-                <h3 className="mb-1 text-sm font-semibold text-[#2B2620]">
+                <h3 className="mb-1 text-sm font-semibold text-[#17171C]">
                   Outfit preview
                 </h3>
 
-                <p className="mb-4 text-xs text-[#8A8172]">
+                <p className="mb-4 text-xs text-[#6B6B73]">
                   How this outfit is laid out.
                 </p>
 
@@ -378,12 +378,12 @@ export default function OutfitBuilder({
           </div>
         </div>
 
-                <div className="flex justify-end gap-3 border-t border-[#E3DACB] px-4 py-4 sm:px-6">
+        <div className="flex justify-end gap-3 border-t border-[#E3DACB] px-4 py-4 sm:px-6">
           <button
             type="button"
             onClick={() => router.back()}
             disabled={saving}
-            className="rounded-lg border border-[#D8CFC1] px-5 py-2.5 text-sm text-[#5C5344] hover:bg-[#F3EDE4] disabled:opacity-50"
+            className="rounded-lg border border-[#D8CFC1] px-5 py-2.5 text-sm text-[#4B4B52] hover:bg-[#F3EDE4] disabled:opacity-50"
           >
             Cancel
           </button>
@@ -391,7 +391,7 @@ export default function OutfitBuilder({
           <button
             type="submit"
             disabled={saving || !name.trim() || selectedItems.length === 0}
-            className="rounded-lg bg-[#C1592F] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#9A4A25] disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg bg-[#22252E] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#15171D] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {saving ? "Saving..." : outfit ? "Save changes" : "Create outfit"}
           </button>

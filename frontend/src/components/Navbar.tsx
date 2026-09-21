@@ -79,20 +79,22 @@ export default function Navbar() {
   function navLinkClass(href: string) {
     const isActive = pathname === href;
 
-    return `text-sm transition ${
+    return `text-[15px] transition ${
       isActive
-        ? "text-[#2B2620] underline underline-offset-8 decoration-2"
-        : "text-[#5C5344] hover:text-[#C1592F]"
+        ? "text-[#17171C] underline underline-offset-[10px] decoration-2"
+        : "text-[#4B4B52] hover:text-[#9B7EA8]"
     }`;
   }
 
   return (
-    <nav className="border-b border-[#E3DACB] bg-[#FFFDF9]">
+    <nav className="bg-[#F7F3EC]">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-8">
-
         {/* Logo */}
-        <Link href="/" className="font-serif text-2xl font-semibold">
-          <span className="text-[#2B2620]">Fashion</span>
+        <Link
+          href="/"
+          className="font-serif text-[2rem] font-medium tracking-[-0.04em]"
+        >
+          <span className="text-[#17171C]">Fashion</span>
           <span className="text-[#9B7EA8]">Tracker</span>
         </Link>
 
@@ -119,16 +121,18 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           {!loading && !user && (
             <>
+
+
               <Link
                 href="/login"
-                className="text-sm text-[#5C5344] hover:text-[#C1592F]"
+                className="text-[15px] text-[#4B4B52] transition hover:text-[#9B7EA8]"
               >
                 Log in
               </Link>
 
               <Link
                 href="/register"
-                className="inline-flex items-center gap-2 rounded-full bg-[#2B2620] px-5 py-2.5 text-sm font-medium text-white transition hover:bg-[#1a1712]"
+                className="inline-flex items-center gap-3 rounded-full bg-[#22252E] px-6 py-3 text-[15px] font-medium text-white transition hover:bg-[#15171D]"
               >
                 Register
                 <span aria-hidden>→</span>
@@ -140,14 +144,14 @@ export default function Navbar() {
             <div className="flex items-center gap-4">
               <Link
                 href="/account"
-                className="text-sm text-[#5C5344] hover:text-[#C1592F]"
+                className="text-[15px] text-[#4B4B52] transition hover:text-[#9B7EA8]"
               >
                 {user.username ?? user.email ?? "Profile"}
               </Link>
 
               <button
                 onClick={handleLogout}
-                className="rounded-full border border-[#D8CFC1] px-5 py-2.5 text-sm font-medium text-[#5C5344] hover:bg-[#F3EDE4]"
+                className="rounded-full border border-[#D8CFC1] px-5 py-2.5 text-[15px] font-medium text-[#4B4B52] transition hover:border-[#9B7EA8] hover:text-[#9B7EA8]"
               >
                 Log out
               </button>

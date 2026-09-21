@@ -38,11 +38,11 @@ export default function WardrobeGrid({
   if (items.length === 0) {
     return (
       <div className="mt-10 rounded-2xl border border-dashed border-[#D8CFC1] bg-[#FFFDF9] px-6 py-16 text-center">
-        <h3 className="text-lg font-medium text-[#2B2620]">
+        <h3 className="text-lg font-medium text-[#17171C]">
           Your wardrobe is empty
         </h3>
 
-        <p className="mt-2 text-sm text-[#8A8172]">
+        <p className="mt-2 text-sm text-[#6B6B73]">
           Add your first clothing item to get started.
         </p>
       </div>
