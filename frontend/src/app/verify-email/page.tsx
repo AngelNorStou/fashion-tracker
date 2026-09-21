@@ -83,43 +83,6 @@ function VerifyEmailContent() {
   );
 }
 
-export default function VerifyEmailPage() {
-  return (
-    <main className="min-h-[calc(100vh-4rem)] bg-[#F7F3EC] px-6 py-16">
-      <div className="mx-auto max-w-md rounded-xl border border-[#E3DACB] bg-[#FFFDF9] p-6 text-center">
-        {status === "loading" && (
-          <p className="text-sm text-[#6B6B73]">Verifying your email...</p>
-        )}
-
-        {status === "success" && (
-          <>
-            <h1 className="text-xl font-semibold text-[#17171C]">
-              Email verified
-            </h1>
-            <p className="mt-2 text-sm text-[#6B6B73]">
-              Your email has been verified. You can now log in.
-            </p>
-            <Link
-              href="/login"
-              className="mt-6 inline-block rounded-lg bg-[#22252E] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#15171D]"
-            >
-              Go to login
-            </Link>
-          </>
-        )}
-
-        {status === "error" && (
-          <>
-            <h1 className="text-xl font-semibold text-[#17171C]">
-              Verification failed
-            </h1>
-            <p className="mt-2 text-sm text-[#9A4A25]">{error}</p>
-          </>
-        )}
-      </div>
-    </main>
-  );
-}
 
 export default function VerifyEmailPage() {
   return (
